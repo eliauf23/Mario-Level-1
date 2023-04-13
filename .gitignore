@@ -1,2 +1,5 @@
 .idea/
 *.swp
+venv/
+/Mario_Level_1.egg-info/
+/tests/.pytest_cache/
