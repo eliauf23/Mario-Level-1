@@ -23,7 +23,7 @@ class TestFlashingCoin(TestCase):
     def test_get_image(self):
         image = self.coin.get_image(1, 160, 5, 8)
         self.assertIsInstance(image, pg.Surface)
-        self.assertEqual(image.get_size(), (10, 16))
+        self.assertEqual(image.get_size(), (13, 21))
 
     def test_update_first_half(self):
         self.clock = pg.time.Clock()
