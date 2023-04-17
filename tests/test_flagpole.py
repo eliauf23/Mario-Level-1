@@ -42,6 +42,21 @@ class TestFlag(TestCase):
         self.flag.handle_state()
         assert self.flag.image == self.flag.frames[0]
 
+    def test_sliding_down(self):
+        self.flag.state = c.SLIDE_DOWN
+        initial_y = self.flag.rect.y
+        self.flag.sliding_down()
+        self.assertEqual(self.flag.rect.y, initial_y + 5)
+        self.assertEqual(self.flag.y_vel, 5)
+
+        self.flag.rect.y = 480
+        self.flag.sliding_down()
+        self.assertEqual(self.flag.state, c.BOTTOM_OF_POLE)
+
+    def test_update(self):
+        with patch.object(self.flag, 'handle_state') as mock_handle_state:
+            self.flag.update()
+            mock_handle_state.assert_called_once()
 class TestPole(TestCase):
     def setUp(self):
         pg.init()
@@ -63,6 +78,11 @@ class TestPole(TestCase):
         image = self.pole.get_image(263, 144, 2, 16)
         assert isinstance(image, pg.Surface)
 
+    def test_update(self):
+        initial_rect = self.pole.rect.copy()
+        self.pole.update()
+        self.assertEqual(self.pole.rect, initial_rect)
+
 class TestFinial(TestCase):
     def setUp(self):
         pg.init()
@@ -83,3 +103,8 @@ class TestFinial(TestCase):
     def test_get_image(self):
         image = self.finial.get_image(228, 120, 8, 8)
         assert isinstance(image, pg.Surface)
+
+    def test_update(self):
+        initial_rect = self.finial.rect.copy()
+        self.finial.update()
+        self.assertEqual(self.finial.rect, initial_rect)

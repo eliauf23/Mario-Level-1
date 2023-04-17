@@ -70,6 +70,7 @@ class TestCoinBox(TestCase):
         for frame in self.coin_box.frames:
             self.assertIsInstance(frame, pg.Surface)
 
+    # TODO: check on this setup_timers test
     def test_setup_timers(self):
         self.coin_box.current_time = 0
         self.coin_box.setup_timers()
@@ -176,3 +177,4 @@ class TestCoinBox(TestCase):
                     self.assertEqual(coin_box.state, c.BUMPED)
                     self.assertEqual(coin_box.y_vel, -6)
                     mock_sfx['powerup_appears'].play.assert_called_once()
+
