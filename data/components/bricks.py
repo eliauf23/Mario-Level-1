@@ -9,6 +9,7 @@ from . import coin
 
 class Brick(pg.sprite.Sprite):
     """Bricks that can be destroyed"""
+
     def __init__(self, x, y, contents=None, powerup_group=None, name='brick'):
         """Initialize the object"""
         pg.sprite.Sprite.__init__(self)
@@ -33,7 +34,6 @@ class Brick(pg.sprite.Sprite):
         self.group = powerup_group
         self.powerup_in_box = True
 
-
     def get_image(self, x, y, width, height):
         """Extracts the image from the sprite sheet"""
         image = pg.Surface([width, height]).convert()
@@ -42,16 +42,14 @@ class Brick(pg.sprite.Sprite):
         image.blit(self.sprite_sheet, (0, 0), (x, y, width, height))
         image.set_colorkey(c.BLACK)
         image = pg.transform.scale(image,
-                                   (int(rect.width*c.BRICK_SIZE_MULTIPLIER),
-                                    int(rect.height*c.BRICK_SIZE_MULTIPLIER)))
+                                   (int(rect.width * c.BRICK_SIZE_MULTIPLIER),
+                                    int(rect.height * c.BRICK_SIZE_MULTIPLIER)))
         return image
-
 
     def setup_frames(self):
         """Set the frames to a list"""
         self.frames.append(self.get_image(16, 0, 16, 16))
         self.frames.append(self.get_image(432, 0, 16, 16))
-
 
     def setup_contents(self):
         """Put 6 coins in contents if needed"""
@@ -60,11 +58,9 @@ class Brick(pg.sprite.Sprite):
         else:
             self.coin_total = 0
 
-
     def update(self):
         """Updates the brick"""
         self.handle_states()
-
 
     def handle_states(self):
         """Determines brick behavior based on state"""
@@ -75,13 +71,11 @@ class Brick(pg.sprite.Sprite):
         elif self.state == c.OPENED:
             self.opened()
 
-
     def resting(self):
         """State when not moving"""
         if self.contents == '6coins':
             if self.coin_total == 0:
                 self.state == c.OPENED
-
 
     def bumped(self):
         """Action during a BUMPED state"""
@@ -99,7 +93,6 @@ class Brick(pg.sprite.Sprite):
                     self.state = c.RESTING
             else:
                 self.state = c.RESTING
-
 
     def start_bump(self, score_group):
         """Transitions brick into BUMPED state"""
@@ -121,7 +114,6 @@ class Brick(pg.sprite.Sprite):
 
         self.state = c.BUMPED
 
-
     def opened(self):
         """Action during OPENED state"""
         self.frame_index = 1
@@ -134,6 +126,7 @@ class Brick(pg.sprite.Sprite):
 
 class BrickPiece(pg.sprite.Sprite):
     """Pieces that appear when bricks are broken"""
+
     def __init__(self, x, y, xvel, yvel):
         super(BrickPiece, self).__init__()
         self.sprite_sheet = setup.GFX['item_objects']
@@ -147,7 +140,6 @@ class BrickPiece(pg.sprite.Sprite):
         self.y_vel = yvel
         self.gravity = .8
 
-
     def setup_frames(self):
         """create the frame list"""
         self.frames = []
@@ -158,7 +150,6 @@ class BrickPiece(pg.sprite.Sprite):
         self.frames.append(image)
         self.frames.append(reversed_image)
 
-
     def get_image(self, x, y, width, height):
         """Extract image from sprite sheet"""
         image = pg.Surface([width, height]).convert()
@@ -167,10 +158,9 @@ class BrickPiece(pg.sprite.Sprite):
         image.blit(self.sprite_sheet, (0, 0), (x, y, width, height))
         image.set_colorkey(c.BLACK)
         image = pg.transform.scale(image,
-                                   (int(rect.width*c.BRICK_SIZE_MULTIPLIER),
-                                    int(rect.height*c.BRICK_SIZE_MULTIPLIER)))
+                                   (int(rect.width * c.BRICK_SIZE_MULTIPLIER),
+                                    int(rect.height * c.BRICK_SIZE_MULTIPLIER)))
         return image
-
 
     def update(self):
         """Update brick piece"""
@@ -183,15 +173,3 @@ class BrickPiece(pg.sprite.Sprite):
         """Remove from sprite groups if off screen"""
         if self.rect.y > c.SCREEN_HEIGHT:
             self.kill()
-
-
-
-
-
-
-
-
-
-
-
-
