@@ -1,10 +1,7 @@
 import unittest
 import pygame as pg
-from .. import setup
-from .. import constants as c
-from data.components.enemies import Enemy
-from data.components.enemies import Goomba
-from data.components.enemies import Koopa
+import SuperMarioLevel1.data.constants as c
+from SuperMarioLevel1.data.components.enemies import Enemy, Goomba, Koopa
 from unittest.mock import Mock
 
 class TestEnemy(unittest.TestCase):

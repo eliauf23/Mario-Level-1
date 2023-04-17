@@ -1,7 +1,7 @@
 import unittest
 import pygame as pg
-from .. import constants as c
-from data.components.collider import Collider
+import SuperMarioLevel1.data.constants as c
+from SuperMarioLevel1.data.components.collider import Collider
 
 class TestCollider(unittest.TestCase):
 

@@ -39,6 +39,30 @@ class TestBrick(TestCase):
             brick.state = c.RESTING
             brick.update()
             self.assertEqual(brick.frame_index, 0)
+    def test_brick_resting_coin_total_is_zero(self):
+        pass
+        # with patch('SuperMarioLevel1.data.components.bricks.Brick.get_image', return_value=pg.Surface((16, 16))):
+        #     brick = Brick(50, 50, contents='6coins')
+        #     brick.state = c.RESTING
+        #     for i in range(6):
+        #         self.start_bump([])
+        #     brick.update()
+        #     self.assertEqual(brick.coin_total, 0)
+        #     self.assertEqual(brick.frame_index, 0)
+        #     self.assertEqual(brick.state, c.OPENED)
+
+    def test_brick_bumped_coins(self):
+        with patch('SuperMarioLevel1.data.components.bricks.Brick.get_image', return_value=pg.Surface((16, 16))):
+            brick = Brick(50, 50, contents='6coins')
+            brick.state = c.BUMPED
+            brick.update()
+            self.assertEqual(brick.frame_index, 0)
+    def test_brick_bumped_star(self):
+        with patch('SuperMarioLevel1.data.components.bricks.Brick.get_image', return_value=pg.Surface((16, 16))):
+            brick = Brick(50, 50, contents='star')
+            brick.state = c.BUMPED
+            brick.update()
+            self.assertEqual(brick.frame_index, 0)
 
 class TestBrickPiece(TestCase):
     def test_brick_piece_init(self):
@@ -97,6 +121,17 @@ class TestBrickPiece(TestCase):
     #         self.assertEqual(brick.state, c.OPENED)
     #
 
+    def test_get_image(self):
+        with patch('SuperMarioLevel1.data.components.bricks.Brick.get_image', return_value=pg.Surface((16, 16))):
+            with patch('SuperMarioLevel1.data.components.bricks.pg.transform.scale',
+                       return_value=pg.Surface((16, 16))):
+                brick = Brick(50, 50, contents='star')
+                brick.sprite_sheet = pg.Surface((16, 16))
+                brick.get_image(0, 0, 16, 16)
+                assert brick.sprite_sheet.get_rect().width == 16
+                assert brick.sprite_sheet.get_rect().height == 16
+                assert brick.sprite_sheet.get_rect().x == 0
+                assert brick.sprite_sheet.get_rect().y == 0
 """
 TODO:
 add more tests to cover different scenarios, such as:

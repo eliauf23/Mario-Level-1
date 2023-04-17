@@ -29,3 +29,14 @@ class TestCastleFlag(TestCase):
             flag.update()
             assert flag.rect.y == 400
             assert flag.state == 'resting'
+
+    def test_get_image(self):
+        with patch('SuperMarioLevel1.data.components.castle_flag.pg.Surface', return_value=pg.Surface((28, 28))):
+            with patch('SuperMarioLevel1.data.components.castle_flag.pg.transform.scale', return_value=pg.Surface((28, 28))):
+                flag = Flag(200, 400)
+                flag.sprite_sheet = pg.Surface((28, 28))
+                flag.get_image(0, 0, 28, 28)
+                assert flag.sprite_sheet.get_rect().width == 28
+                assert flag.sprite_sheet.get_rect().height == 28
+                assert flag.sprite_sheet.get_rect().x == 0
+                assert flag.sprite_sheet.get_rect().y == 0

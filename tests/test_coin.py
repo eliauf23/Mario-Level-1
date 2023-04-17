@@ -8,8 +8,12 @@ from SuperMarioLevel1.data import constants as c
 class TestCoin(TestCase):
     def setUp(self):
         pg.init()
+        pg.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_HEIGHT))
         self.score_group = []
         self.coin = Coin(100, 100, self.score_group)
+
+    def tearDown(self) -> None:
+        pg.quit()
 
     def test_coin_init(self):
         self.assertIsInstance(self.coin.image, pg.Surface)
