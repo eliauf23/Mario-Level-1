@@ -80,6 +80,20 @@ class TestOverheadInfo(TestCase):
             self.assertEqual(self.overhead_info.coin_total, 42)
             mock_create_label.assert_called_once_with(self.overhead_info.coin_count_images, '*42', ANY, ANY)
 
+    def test_update_coin_total_small_string(self):
+        level_info = {c.COIN_TOTAL: 2}
+        with patch.object(self.overhead_info, 'create_label') as mock_create_label:
+            self.overhead_info.update_coin_total(level_info)
+            self.assertEqual(self.overhead_info.coin_total, 2)
+            mock_create_label.assert_called_once_with(self.overhead_info.coin_count_images, '*02', ANY, ANY)
+
+    def test_update_coin_total_large_string(self):
+        level_info = {c.COIN_TOTAL: 100}
+        with patch.object(self.overhead_info, 'create_label') as mock_create_label:
+            self.overhead_info.update_coin_total(level_info)
+            self.assertEqual(self.overhead_info.coin_total, 100)
+            mock_create_label.assert_called_once_with(self.overhead_info.coin_count_images, '*00', ANY, ANY)
+
     # TODO: Add similar tests for other states in the handle_level_state method
     # TODO: Add tests for update_count_down_clock method
     # TODO: Add tests for the draw method
@@ -94,7 +108,69 @@ class TestOverheadInfo(TestCase):
                 self.overhead_info.handle_level_state(level_info)
                 mock_update_score_images.assert_called_once_with(self.overhead_info.score_images, 100)
                 mock_update_coin_total.assert_called_once_with(level_info)
+    def test_handle_level_state_level_not_dead_mario(self):
+        level_info = {c.SCORE: 100, c.COIN_TOTAL: 42, c.LEVEL_STATE: c.NOT_FROZEN, c.CURRENT_TIME: 10}
+        self.overhead_info.update(level_info, mario=Mock(dead=False))
+        self.overhead_info.state = c.LEVEL
+        with patch.object(self.overhead_info, 'update_score_images') as mock_update_score_images:
+            with patch.object(self.overhead_info, 'update_coin_total') as mock_update_coin_total:
+                with patch.object(self.overhead_info, 'update_count_down_clock') as mock_update_count_down_clock:
+                    self.overhead_info.handle_level_state(level_info)
+                    mock_update_score_images.assert_called_once_with(self.overhead_info.score_images, 100)
+                    mock_update_coin_total.assert_called_once_with(level_info)
+                   #mock_update_count_down_clock.assert_called_once_with(level_info)
 
+    def test_handle_level_state_level_dead_mario(self):
+        level_info = {c.SCORE: 100, c.COIN_TOTAL: 42, c.LEVEL_STATE: c.NOT_FROZEN, c.CURRENT_TIME: 10}
+        self.overhead_info.update(level_info, mario=Mock())
+        self.overhead_info.state = c.LEVEL
+        with patch.object(self.overhead_info, 'update_score_images') as mock_update_score_images:
+            with patch.object(self.overhead_info, 'update_coin_total') as mock_update_coin_total:
+                with patch.object(self.overhead_info, 'update_count_down_clock') as mock_update_count_down_clock:
+                    self.overhead_info.handle_level_state(level_info)
+                    mock_update_score_images.assert_called_once_with(self.overhead_info.score_images, 100)
+                    mock_update_coin_total.assert_called_once_with(level_info)
+                    # mock_update_count_down_clock.assert_called_once_with(level_info)
+
+    def test_handle_level_state_time_out(self):
+        self.overhead_info.state = c.TIME_OUT
+        level_info = {c.SCORE: 100, c.COIN_TOTAL: 42}
+        with patch.object(self.overhead_info, 'update_score_images') as mock_update_score_images:
+            with patch.object(self.overhead_info, 'update_coin_total') as mock_update_coin_total:
+                self.overhead_info.handle_level_state(level_info)
+                mock_update_score_images.assert_called_once_with(self.overhead_info.score_images, 100)
+                mock_update_coin_total.assert_called_once_with(level_info)
+
+    def test_handle_level_state_game_over(self):
+        self.overhead_info.state = c.GAME_OVER
+        level_info = {c.SCORE: 100, c.COIN_TOTAL: 42}
+        with patch.object(self.overhead_info, 'update_score_images') as mock_update_score_images:
+            with patch.object(self.overhead_info, 'update_coin_total') as mock_update_coin_total:
+                self.overhead_info.handle_level_state(level_info)
+                mock_update_score_images.assert_called_once_with(self.overhead_info.score_images, 100)
+                mock_update_coin_total.assert_called_once_with(level_info)
+
+    def test_handle_level_state_fast_count_down(self):
+        self.overhead_info.state = c.FAST_COUNT_DOWN
+        self.overhead_info.time = 0
+        level_info = {c.SCORE: 100, c.COIN_TOTAL: 42, c.CURRENT_TIME: 0}
+        with patch.object(self.overhead_info, 'update_score_images') as mock_update_score_images:
+            with patch.object(self.overhead_info, 'update_coin_total') as mock_update_coin_total:
+                with patch.object(self.overhead_info, 'update_count_down_clock') as mock_update_count_down_clock:
+                    self.overhead_info.handle_level_state(level_info)
+                    mock_update_score_images.assert_called_once_with(self.overhead_info.score_images, self.overhead_info.score)
+                    mock_update_coin_total.assert_called_once_with(level_info)
+                    mock_update_count_down_clock.assert_called_once_with(level_info)
+
+    def test_handle_level_state_end_of_level(self):
+        self.overhead_info.state = c.END_OF_LEVEL
+        self.overhead_info.flashing_coin = Mock()
+        level_info = {c.SCORE: 100, c.COIN_TOTAL: 42, c.CURRENT_TIME: 0}
+        with patch.object(self.overhead_info, 'update_score_images') as mock_update_score_images:
+            with patch.object(self.overhead_info, 'update_coin_total') as mock_update_coin_total:
+                with patch.object(self.overhead_info.flashing_coin, 'update') as mock_flashing_coin_update:
+                    self.overhead_info.handle_level_state(level_info)
+                    mock_flashing_coin_update.assert_called_once_with(0)
     # Add tests for other states in the same manner, adjusting the mock calls accordingly
 
     def test_update_count_down_clock_regular(self):
@@ -111,9 +187,148 @@ class TestOverheadInfo(TestCase):
         self.overhead_info.update_count_down_clock(level_info)
         self.assertEqual(self.overhead_info.time, 9)
 
+    def test_update_count_down_clock_big_time_diff(self):
+        level_info = {c.CURRENT_TIME: 500}
+        self.overhead_info.state = c.MAIN_MENU
+        self.overhead_info.time = 10
+        self.overhead_info.current_time = 0
+        self.overhead_info.update_count_down_clock(level_info)
+        self.assertEqual(self.overhead_info.time, 9)
+
+    def test_draw_main_menu(self):
+        self.overhead_info.state = c.MAIN_MENU
+        surface = Mock()
+        with patch.object(self.overhead_info, 'draw_main_menu_info') as mock_draw_main_menu_info:
+            self.overhead_info.draw(surface)
+            mock_draw_main_menu_info.assert_called_once_with(surface)
+
+    def test_draw_load_screen(self):
+        self.overhead_info.state = c.LOAD_SCREEN
+        surface = Mock()
+        with patch.object(self.overhead_info, 'draw_loading_screen_info') as mock_draw_loading_screen_info:
+            self.overhead_info.draw(surface)
+            mock_draw_loading_screen_info.assert_called_once_with(surface)
+
+    def test_draw_level(self):
+        self.overhead_info.state = c.LEVEL
+        surface = Mock()
+        with patch.object(self.overhead_info, 'draw_level_screen_info') as mock_draw_level_screen_info:
+            self.overhead_info.draw(surface)
+            mock_draw_level_screen_info.assert_called_once_with(surface)
+
+    def test_draw_game_over(self):
+        self.overhead_info.state = c.GAME_OVER
+        surface = Mock()
+        with patch.object(self.overhead_info, 'draw_game_over_screen_info') as mock_draw_game_over_screen_info:
+            self.overhead_info.draw(surface)
+            mock_draw_game_over_screen_info.assert_called_once_with(surface)
+
+    def test_draw_fast_count_down(self):
+        self.overhead_info.state = c.FAST_COUNT_DOWN
+        surface = Mock()
+        with patch.object(self.overhead_info, 'draw_level_screen_info') as mock_draw_level_screen_info:
+            self.overhead_info.draw(surface)
+            mock_draw_level_screen_info.assert_called_once_with(surface)
+
+    def test_draw_end_of_level(self):
+        self.overhead_info.state = c.END_OF_LEVEL
+        surface = Mock()
+        with patch.object(self.overhead_info, 'draw_level_screen_info') as mock_draw_level_screen_info:
+            self.overhead_info.draw(surface)
+            mock_draw_level_screen_info.assert_called_once_with(surface)
+
+    def test_draw_time_out(self):
+        self.overhead_info.state = c.TIME_OUT
+        surface = Mock()
+        with patch.object(self.overhead_info, 'draw_time_out_screen_info') as mock_draw_time_out_screen_info:
+            self.overhead_info.draw(surface)
+            mock_draw_time_out_screen_info.assert_called_once_with(surface)
+
     def test_draw_main_menu_info(self):
-        # TODO: Add test for the draw method
-        pass
+        surface = Mock()
+        score_images_len = len(self.overhead_info.score_images)
+        letter_len_main_menu = 0
+        for label in self.overhead_info.main_menu_labels:
+            for letter in label:
+                letter_len_main_menu += 1
+        coin_count_images_len = len(self.overhead_info.coin_count_images)
+        letter_len_label_list = 0
+        for label in self.overhead_info.label_list:
+            for letter in label:
+                letter_len_label_list += 1
+        total_expected_blit = score_images_len + letter_len_main_menu + coin_count_images_len + letter_len_label_list + 1
+        #^the +1 is because of line 350 in info.py
+        with patch.object(surface, "blit") as mock_blit:
+            self.overhead_info.draw_main_menu_info(surface)
+            self.assertEqual(mock_blit.call_count, total_expected_blit)
+
+    def test_draw_loading_screen_info(self):
+        surface = Mock()
+        score_images_len = len(self.overhead_info.score_images)
+        center_labels_total_len = 0
+        for word in self.overhead_info.center_labels:
+            for letter in word:
+                center_labels_total_len += 1
+        life_total_label_len = len(self.overhead_info.life_total_label)
+        coin_count_images_len = len(self.overhead_info.coin_count_images)
+        label_list_total_len = 0
+        for label in self.overhead_info.label_list:
+            for letter in label:
+                label_list_total_len += 1
+        total_expected_blit = score_images_len + center_labels_total_len + life_total_label_len + 2 + coin_count_images_len + label_list_total_len + 1
+        with patch.object(surface, "blit") as mock_blit:
+            self.overhead_info.draw_loading_screen_info(surface)
+            self.assertEqual(mock_blit.call_count, total_expected_blit)
+
+    def test_draw_level_screen_info(self):
+        surface = Mock()
+        score_images_len = len(self.overhead_info.score_images)
+        count_down_images_len = len(self.overhead_info.count_down_images)
+        coin_count_images_len = len(self.overhead_info.coin_count_images)
+        label_list_total_len = 0
+        for label in self.overhead_info.label_list:
+            for letter in label:
+                label_list_total_len += 1
+        total_expected_blit = score_images_len + count_down_images_len + coin_count_images_len + label_list_total_len + 1
+        with patch.object(surface, "blit") as mock_blit:
+            self.overhead_info.draw_level_screen_info(surface)
+            self.assertEqual(mock_blit.call_count, total_expected_blit)
+
+    def test_draw_game_over_screen_info(self):
+        surface = Mock()
+        score_images_len = len(self.overhead_info.score_images)
+        game_over_labels_total_count = 0
+        for word in self.overhead_info.game_over_label:
+            for letter in word:
+                game_over_labels_total_count += 1
+        coin_count_images_len = len(self.overhead_info.coin_count_images)
+        label_list_total_len = 0
+        for label in self.overhead_info.label_list:
+            for letter in label:
+                label_list_total_len += 1
+        total_expected_blit = score_images_len + game_over_labels_total_count + coin_count_images_len + label_list_total_len + 1
+        with patch.object(surface, "blit") as mock_blit:
+            self.overhead_info.draw_game_over_screen_info(surface)
+            self.assertEqual(mock_blit.call_count, total_expected_blit)
+
+    def test_draw_time_out_screen_info(self):
+        surface = Mock()
+        score_images_len = len(self.overhead_info.score_images)
+        time_out_labels_total_count = 0
+        for word in self.overhead_info.time_out_label:
+            for letter in word:
+                time_out_labels_total_count += 1
+        coin_count_images_len = len(self.overhead_info.coin_count_images)
+        label_list_total_len = 0
+        for label in self.overhead_info.label_list:
+            for letter in label:
+                label_list_total_len += 1
+
+        total_expected_blit = score_images_len + time_out_labels_total_count + coin_count_images_len + label_list_total_len + 1
+        with patch.object(surface, "blit") as mock_blit:
+            self.overhead_info.draw_time_out_screen_info(surface)
+            self.assertEqual(mock_blit.call_count, total_expected_blit)
+
 # # Will look something like this!
 #     with patch('SuperMarioLevel1.data.components.info.pg') as mock_pg:
 #         self.overhead_info.state = c.MAIN_MENU
