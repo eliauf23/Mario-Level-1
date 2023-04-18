@@ -100,6 +100,40 @@ class testTools(TestCase):
             self.assertFalse(self.control.show_fps)
             mock_set_caption.assert_called()
 
+    # dumb idea: maybe have mock_set_caption set done to true?
+    def test_main(self):
+        self.control.state = _State()
+        self.control.done = False
+        self.control.show_fps = True
+        setDoneToTrue = lambda with_fps: setattr(self.control, 'done', True)
+        with patch.object(self.control, "event_loop") as mock_event_loop, \
+                patch.object(pg.display, "set_caption", new=setDoneToTrue),\
+                patch.object(pg.display, "update") as mock_update:
+            self.control.main()
+            mock_event_loop.assert_called()
+            mock_update.assert_called()
+
+    #get_event is not implemented
+    def test_get_event(self):
+        self.state.get_event(Mock())
+
+    def test_startup(self):
+        self.state.startup("a", "b")
+        self.assertEqual(self.state.persist, "b")
+        self.assertEqual(self.state.start_time, "a")
+
+    def test_cleanup(self):
+        self.state.persist = "a"
+        ret_val = self.state.cleanup()
+        self.assertEqual(ret_val, "a")
+        self.assertEqual(self.state.done, False)
+
+    #update is not implemented
+    def test_update(self):
+        self.state.update("a", "b", "c")
+
+
+
 
 
 
