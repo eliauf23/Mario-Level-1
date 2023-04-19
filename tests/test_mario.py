@@ -144,6 +144,24 @@ class TestMario(TestCase):
                 self.mario.handle_state(self.keys, fire_group_mock)
                 mock_method.assert_called_once_with(self.keys, fire_group_mock)
 
+    def test_handle_state_no_keys(self):
+        states_methods = [
+            (c.DEATH_JUMP, 'jumping_to_death'),
+            (c.SMALL_TO_BIG, 'changing_to_big'),
+            (c.BIG_TO_FIRE, 'changing_to_fire'),
+            (c.BIG_TO_SMALL, 'changing_to_small'),
+            (c.FLAGPOLE, 'flag_pole_sliding'),
+            (c.BOTTOM_OF_POLE, 'sitting_at_bottom_of_pole'),
+            (c.WALKING_TO_CASTLE, 'walking_to_castle'),
+            (c.END_OF_LEVEL_FALL, 'falling_at_end_of_level')
+        ]
+        fire_group_mock = MagicMock()
+        for state, method_name in states_methods:
+            self.mario.state = state
+            with patch.object(self.mario, method_name) as mock_method:
+                self.mario.handle_state(self.keys, fire_group_mock)
+                mock_method.assert_called_once_with()
+
     def test_standing(self):
         fire_group = MagicMock()
         self.mario.standing(self.keys, fire_group)
@@ -152,6 +170,63 @@ class TestMario(TestCase):
         self.assertEqual(self.mario.frame_index, 0)
         self.assertEqual(self.mario.x_vel, 0)
         self.assertEqual(self.mario.y_vel, 0)
+
+    def test_standing_action(self):
+        fire_group = MagicMock()
+        self.keys[tools.keybinding['action']] = True
+        self.mario.fire = True
+        self.mario.allow_fireball = True
+        with patch.object(self.mario, "shoot_fireball") as mock_shoot_fireball:
+            self.mario.standing(self.keys, fire_group)
+            mock_shoot_fireball.assert_called_once_with(fire_group)
+
+    def test_standing_down(self):
+        fire_group = MagicMock()
+        self.keys[tools.keybinding['down']] = True
+        self.mario.standing(self.keys, fire_group)
+        self.assertTrue(self.mario.crouching)
+
+    def test_standing_left(self):
+        fire_group = MagicMock()
+        self.keys[tools.keybinding['left']] = True
+        with patch.object(self.mario, "get_out_of_crouch") as mock_get_out_of_crouch:
+            self.mario.standing(self.keys, fire_group)
+            self.assertFalse(self.mario.facing_right)
+            mock_get_out_of_crouch.assert_called()
+            self.assertEqual(self.mario.state, c.WALK)
+
+    def test_standing_right(self):
+        fire_group = MagicMock()
+        self.keys[tools.keybinding['right']] = True
+        with patch.object(self.mario, "get_out_of_crouch") as mock_get_out_of_crouch:
+            self.mario.standing(self.keys, fire_group)
+            self.assertTrue(self.mario.facing_right)
+            mock_get_out_of_crouch.assert_called()
+            self.assertEqual(self.mario.state, c.WALK)
+
+    def test_standing_jump_big(self):
+        fire_group = MagicMock()
+        setup.SFX['big_jump'] = MagicMock()
+        self.keys[tools.keybinding['jump']] = True
+        self.mario.allow_jump = True
+        self.mario.big = True
+        with patch.object(setup.SFX['big_jump'], 'play') as mock_play:
+            self.mario.standing(self.keys, fire_group)
+            mock_play.assert_called_once_with()
+            self.assertEqual(self.mario.state, c.JUMP)
+            self.assertEqual(self.mario.y_vel, c.JUMP_VEL)
+
+    def test_standing_jump_not_big(self):
+        fire_group = MagicMock()
+        setup.SFX['small_jump'] = MagicMock()
+        self.keys[tools.keybinding['jump']] = True
+        self.mario.allow_jump = True
+        self.mario.big = False
+        with patch.object(setup.SFX['small_jump'], 'play') as mock_play:
+            self.mario.standing(self.keys, fire_group)
+            mock_play.assert_called_once_with()
+            self.assertEqual(self.mario.state, c.JUMP)
+            self.assertEqual(self.mario.y_vel, c.JUMP_VEL)
 
     def test_get_out_of_crouch(self):
         self.mario.crouching = True
@@ -166,6 +241,11 @@ class TestMario(TestCase):
         # Assert that the rect's bottom and x are unchanged
         self.assertEqual(self.mario.rect.bottom, bottom)
         self.assertEqual(self.mario.rect.x, left)
+
+    def test_get_out_of_crouch_not_facing_right(self):
+        self.mario.facing_right = False
+        self.mario.get_out_of_crouch()
+        self.assertEqual(self.mario.image, self.mario.left_frames[0])
 
     def test_check_to_allow_jump(self):
         self.keys[tools.keybinding['jump']] = False
@@ -196,6 +276,20 @@ class TestMario(TestCase):
         setup.SFX['fireball'].play.assert_called_once()
         fire_group.add.assert_called_once()
 
+    def test_shoot_fireball_not_facing_right(self):
+        fire_group = MagicMock()
+        self.mario.facing_right = False
+        setup.SFX['fireball'] = MagicMock()
+        self.mario.fire = True
+        self.mario.current_time = 1000  # Set the current_time attribute
+        self.mario.last_fireball_time = 0  # Set the last_fireball_time attribute
+        self.mario.shoot_fireball(fire_group)
+
+        setup.SFX['fireball'].play.assert_called_once()
+        fire_group.add.assert_called_once()
+        self.assertEqual(self.mario.image, self.mario.left_frames[self.mario.frame_index])
+
+
     def test_count_number_of_fireballs(self):
         fire_group = MagicMock()
         powerup_group = [FireBall(0, 0, True) for _ in range(3)]
@@ -220,6 +314,136 @@ class TestMario(TestCase):
 
         # Ensure Mario doesn't move if no keys are pressed
         self.assertEqual(self.mario.x_vel, 0)
+
+    def test_walking_frame_index_not_0_less_than_3(self):
+        fire_group = MagicMock()
+        zero_func = lambda: 0
+        self.mario.frame_index = 1
+        with patch.object(self.mario, 'calculate_animation_speed', new=zero_func):
+            self.mario.current_time = 100
+            self.mario.walking_timer = 10
+            self.mario.walking(self.keys, fire_group)
+            self.assertEqual(self.mario.frame_index, 2)
+            self.assertEqual(self.mario.walking_timer, self.mario.current_time)
+
+    def test_walking_frame_index_not_0_not_less_than_3(self):
+        self.mario.frame_index = 3
+        fire_group = MagicMock()
+        zero_func = lambda: 0
+        with patch.object(self.mario, 'calculate_animation_speed', new=zero_func):
+            self.mario.current_time = 100
+            self.mario.walking_timer = 10
+            self.mario.walking(self.keys, fire_group)
+            self.assertEqual(self.mario.frame_index, 1)
+            self.assertEqual(self.mario.walking_timer, self.mario.current_time)
+
+    def test_walking_action(self):
+        fire_group = MagicMock()
+        self.keys[tools.keybinding['action']] = True
+        self.mario.fire = True
+        self.mario.allow_fireball = True
+        self.mario.current_time = 0
+        with patch.object(self.mario, 'shoot_fireball') as mock_shoot_fireball:
+            self.mario.walking(self.keys, fire_group)
+            mock_shoot_fireball.assert_called_once_with(fire_group)
+            self.assertEqual(self.mario.max_x_vel, c.MAX_RUN_SPEED)
+            self.assertEqual(self.mario.x_accel, c.RUN_ACCEL)
+
+    def test_walking_jump_both_inner_ifs(self):
+        fire_group = MagicMock()
+        self.mario.big = True
+        self.mario.current_time = 0
+        self.mario.allow_jump = True
+        setup.SFX['big_jump'] = MagicMock()
+        self.keys[tools.keybinding['jump']] = True
+        self.mario.x_vel = 5
+        self.mario.walking(self.keys, fire_group)
+        setup.SFX['big_jump'].play.assert_called_once()
+        self.assertEqual(self.mario.y_vel, c.JUMP_VEL - 0.5)
+
+    def test_walking_jump_both_inner_elses(self):
+        fire_group = MagicMock()
+        self.mario.big = False
+        self.mario.current_time = 0
+        self.mario.allow_jump = True
+        setup.SFX['small_jump'] = MagicMock()
+        self.keys[tools.keybinding['jump']] = True
+        self.mario.x_vel = 4.5
+        self.mario.walking(self.keys, fire_group)
+        setup.SFX['small_jump'].play.assert_called_once()
+        self.assertEqual(self.mario.y_vel, c.JUMP_VEL)
+
+    def test_walking_left_all_ifs(self):
+        fire_group = MagicMock()
+        self.mario.current_time = 0
+        self.keys[tools.keybinding['left']] = True
+        self.mario.x_vel = 1
+        self.mario.max_x_vel = 0
+        with patch.object(self.mario, 'get_out_of_crouch') as mock_get_out_of_crouch:
+            self.mario.walking(self.keys, fire_group)
+            mock_get_out_of_crouch.assert_called_once_with()
+            self.assertFalse(self.mario.facing_right)
+            self.assertEqual(self.mario.frame_index, 5)
+            self.assertEqual(self.mario.x_accel, c.SMALL_TURNAROUND)
+            self.assertEqual(self.mario.x_vel, -0.5)
+
+    def test_walking_left_all_elses(self):
+        fire_group = MagicMock()
+        self.mario.current_time = 0
+        self.keys[tools.keybinding['left']] = True
+        self.mario.x_vel = -10
+        self.mario.max_x_vel = -1
+        with patch.object(self.mario, 'get_out_of_crouch') as mock_get_out_of_crouch:
+            self.mario.walking(self.keys, fire_group)
+            mock_get_out_of_crouch.assert_called_once_with()
+            self.assertFalse(self.mario.facing_right)
+            self.assertEqual(self.mario.x_accel, c.WALK_ACCEL)
+            self.assertEqual(self.mario.x_vel, -9.85)
+
+    def test_walking_right_all_ifs(self):
+        fire_group = MagicMock()
+        self.mario.current_time = 0
+        self.keys[tools.keybinding['right']] = True
+        self.mario.x_vel = -1
+        # self.mario.max_x_vel = 0
+        with patch.object(self.mario, 'get_out_of_crouch') as mock_get_out_of_crouch:
+            self.mario.walking(self.keys, fire_group)
+            mock_get_out_of_crouch.assert_called_once_with()
+            self.assertTrue(self.mario.facing_right)
+            self.assertEqual(self.mario.frame_index, 5)
+            self.assertEqual(self.mario.x_accel, c.SMALL_TURNAROUND)
+            self.assertEqual(self.mario.x_vel, 0.5)
+
+    def test_walking_right_all_elses(self):
+        fire_group = MagicMock()
+        self.mario.current_time = 0
+        self.keys[tools.keybinding['right']] = True
+        self.mario.x_vel = 10
+        # self.mario.max_x_vel = -1
+        with patch.object(self.mario, 'get_out_of_crouch') as mock_get_out_of_crouch:
+            self.mario.walking(self.keys, fire_group)
+            mock_get_out_of_crouch.assert_called_once_with()
+            self.assertTrue(self.mario.facing_right)
+            self.assertEqual(self.mario.x_accel, c.WALK_ACCEL)
+            self.assertEqual(self.mario.x_vel, 9.85)
+
+    def test_walking_second_to_last_branch(self):
+        fire_group = MagicMock()
+        self.mario.current_time = 0
+        self.mario.facing_right = False
+        self.mario.x_vel = -1
+        self.mario.walking(self.keys, fire_group)
+        self.assertEqual(self.mario.x_vel, -1 + self.mario.x_accel)
+
+    def test_walking_last_branch(self):
+        fire_group = MagicMock()
+        self.mario.current_time = 0
+        self.mario.facing_right = False
+        self.mario.x_vel = 0
+        self.mario.walking(self.keys, fire_group)
+        self.assertEqual(self.mario.x_vel, 0)
+        self.assertEqual(self.mario.state, c.STAND)
+
 
     def test_calculate_animation_speed(self):
         self.mario.x_vel = 0
@@ -246,6 +470,30 @@ class TestMario(TestCase):
         # Ensure Mario's y_vel increases due to gravity
         self.assertGreater(self.mario.y_vel, 0)
 
+    def test_jumping_left(self):
+        self.keys[tools.keybinding['left']] = True
+        self.mario.x_vel = 1
+        self.mario.max_x_vel = 0
+        fire_group = MagicMock()
+        self.mario.jumping(self.keys, fire_group)
+        self.assertEqual(self.mario.x_vel, 1-self.mario.x_accel)
+
+    def test_jumping_right(self):
+        self.keys[tools.keybinding['right']] = True
+        self.mario.x_vel = 0
+        self.mario.max_x_vel = 1
+        fire_group = MagicMock()
+        self.mario.jumping(self.keys, fire_group)
+        self.assertEqual(self.mario.x_vel, self.mario.x_accel)
+
+    def test_jumping_action(self):
+        fire_group = MagicMock()
+        self.keys[tools.keybinding['action']] = True
+        self.mario.fire = True
+        self.mario.allow_fireball = True
+        with patch.object(self.mario, 'shoot_fireball') as mock_shoot_fireball:
+            self.mario.jumping(self.keys, fire_group)
+            mock_shoot_fireball.assert_called_once_with(fire_group)
     def test_falling(self):
         keys = {
             tools.keybinding['left']: False,
@@ -261,6 +509,31 @@ class TestMario(TestCase):
 
         # Ensure Mario's y_vel increases due to gravity
         self.assertGreater(self.mario.y_vel, -5)
+
+    def test_falling_left(self):
+        self.keys[tools.keybinding['left']] = True
+        self.mario.x_vel = 1
+        self.mario.max_x_vel = 0
+        fire_group = MagicMock()
+        self.mario.falling(self.keys, fire_group)
+        self.assertEqual(self.mario.x_vel, 1 - self.mario.x_accel)
+
+    def test_falling_right(self):
+        self.keys[tools.keybinding['right']] = True
+        self.mario.x_vel = 0
+        self.mario.max_x_vel = 1
+        fire_group = MagicMock()
+        self.mario.falling(self.keys, fire_group)
+        self.assertEqual(self.mario.x_vel, self.mario.x_accel)
+
+    def test_falling_action(self):
+        fire_group = MagicMock()
+        self.keys[tools.keybinding['action']] = True
+        self.mario.fire = True
+        self.mario.allow_fireball = True
+        with patch.object(self.mario, 'shoot_fireball') as mock_shoot_fireball:
+            self.mario.falling(self.keys, fire_group)
+            mock_shoot_fireball.assert_called_once_with(fire_group)
 
     def test_timer_between_these_two_times(self):
         self.mario.current_time = 100
@@ -385,6 +658,15 @@ class TestMario(TestCase):
         self.mario.jumping_to_death()
         self.assertEqual(self.mario.death_timer, 1000)
         self.assertEqual(self.mario.y_vel, 0)
+
+    def test_jumping_to_death_elif(self):
+        self.mario.death_timer = 1
+        self.mario.current_time = 600
+        self.mario.rect.y = 0
+        self.mario.y_vel = 0
+        self.mario.jumping_to_death()
+        self.assertEqual(self.mario.rect.y, self.mario.y_vel-self.mario.gravity)
+
 
     def test_start_death_jump(self):
         game_info = {c.MARIO_DEAD: False}
