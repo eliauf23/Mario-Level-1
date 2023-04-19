@@ -16,13 +16,45 @@ class TestBrick(TestCase):
             self.assertEqual(brick.coin_total, 6)
             self.assertEqual(brick.state, c.RESTING)
 
-    def test_brick_bump(self):
-        with patch('SuperMarioLevel1.data.components.bricks.Brick.get_image', return_value=pg.Surface((16, 16))):
-            powerup_group = pg.sprite.Group()
-            brick = Brick(50, 50, contents='6coins', powerup_group=powerup_group)
-            brick.start_bump(None)
-            self.assertEqual(brick.state, c.BUMPED)
-            self.assertEqual(brick.y_vel, -6)
+
+
+    def test_bumped_star(self):
+        brick = Brick(50, 50, contents='star')
+        brick.rect.y = brick.rest_height + 10
+        brick.bumped()
+        self.assertEqual(brick.rect.y, brick.rest_height)
+        self.assertEqual(brick.state, c.OPENED)
+
+    def test_bumped_coins(self):
+        brick = Brick(50, 50, contents='6coins')
+        brick.rect.y = brick.rest_height + 10
+        brick.coin_total = 0
+        brick.bumped()
+        self.assertEqual(brick.rect.y, brick.rest_height)
+        self.assertEqual(brick.state, c.OPENED)
+        brick.coin_total = 6
+        brick.rect.y = brick.rest_height + 10
+        brick.bumped()
+        self.assertEqual(brick.state, c.RESTING)
+
+    def test_bumped_other(self):
+        brick = Brick(50, 50)
+        brick.rect.y = brick.rest_height + 10
+        brick.bumped()
+        self.assertEqual(brick.rect.y, brick.rest_height)
+        self.assertEqual(brick.state, c.RESTING)
+
+
+
+    def test_get_image(self):
+        """Test get_image method"""
+        test_brick = Brick(0, 0, contents='6coins')
+        test_image = test_brick.get_image(16, 0, 16, 16)
+
+        self.assertIsInstance(test_image, pg.Surface)
+        self.assertEqual(test_image.get_width(), 16 * c.SIZE_MULTIPLIER)
+        self.assertEqual(test_image.get_height(), 16 * c.SIZE_MULTIPLIER)
+        self.assertEqual(test_image.get_at((0, 0)), c.TRANSPARENT)
 
     def test_brick_opened(self):
         with patch('SuperMarioLevel1.data.components.bricks.Brick.get_image', return_value=pg.Surface((16, 16))):
@@ -41,6 +73,24 @@ class TestBrick(TestCase):
             brick.update()
             self.assertEqual(brick.frame_index, 0)
 
+    def test_brick_contents_6coins_start_bump(self):
+        with patch('SuperMarioLevel1.data.components.bricks.Brick.get_image', return_value=pg.Surface((16, 16))):
+            powerup_group = pg.sprite.Group()
+            brick = Brick(50, 50, contents='6coins', powerup_group=powerup_group)
+            brick.coin_total = 0
+            brick.start_bump(None)
+            self.assertEqual(brick.state, c.BUMPED)
+            self.assertEqual(brick.y_vel, -6)
+            brick.coin_total = 1
+            brick.start_bump(None)
+            self.assertEqual(brick.state, c.BUMPED)
+            self.assertEqual(brick.y_vel, -6)
+            self.assertEqual(brick.coin_total, 0)
+            self.assertEqual(brick.frame_index, 1)
+
+
+
+
     def test_brick_resting_coin_total_is_zero(self):
         with patch('SuperMarioLevel1.data.components.bricks.Brick.get_image', return_value=pg.Surface((16, 16))):
             brick = Brick(50, 50, contents='6coins')
@@ -51,6 +101,17 @@ class TestBrick(TestCase):
             self.assertEqual(brick.coin_total, 0)
             self.assertEqual(brick.frame_index, 0)
             self.assertEqual(brick.state, c.OPENED)
+
+
+
+    def test_brick_contents_star_start_bump(self):
+        with patch('SuperMarioLevel1.data.components.bricks.Brick.get_image', return_value=pg.Surface((16, 16))):
+            brick = Brick(50, 50, contents='star')
+            brick.start_bump(None)
+            self.assertEqual(brick.frame_index, 1)
+            self.assertEqual(brick.y_vel, -6)
+            self.assertEqual(brick.state, c.BUMPED)
+
 
     def test_brick_bumped_coins(self):
         with patch('SuperMarioLevel1.data.components.bricks.Brick.get_image', return_value=pg.Surface((16, 16))):
@@ -66,12 +127,7 @@ class TestBrick(TestCase):
             brick.update()
             self.assertEqual(brick.frame_index, 0)
 
-    def test_brick_contents_star_start_bump(self):
-        with patch('SuperMarioLevel1.data.components.bricks.Brick.get_image', return_value=pg.Surface((16, 16))):
-            brick = Brick(50, 50, contents='star')
-            self.assertEqual(brick.contents, 'star')
-            brick.start_bump(None)
-            self.assertEqual(brick.state, c.BUMPED)
+
 
     def test_get_image(self):
         with patch('SuperMarioLevel1.data.components.bricks.Brick.get_image', return_value=pg.Surface((16, 16))):
