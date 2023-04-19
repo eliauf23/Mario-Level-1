@@ -58,12 +58,12 @@ class TestFlashingCoin(TestCase):
 
         self.coin_flashing.first_half = False
         self.coin_flashing.frame_index = 1
-        self.coin_flashing.timer = pg.time.get_ticks()
+        self.coin_flashing.timer = 0
 
-        self.current_time += 150
+        self.current_time = 1000
+
         self.coin_flashing.update(self.current_time)
         self.assertEqual(self.coin_flashing.frame_index, 0)
         self.assertTrue(self.coin_flashing.first_half)
 
-    def test_update_second_half(self):
-        pass
+

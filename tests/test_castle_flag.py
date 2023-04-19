@@ -24,6 +24,13 @@ class TestCastleFlag(TestCase):
             assert flag.rect.y == 398
             assert flag.state == 'rising'
 
+
+    def test_rising(self):
+        flag = Flag(200, 400)
+        flag.rect.bottom = flag.target_height - 50
+        flag.rising()
+        self.assertTrue(flag.state, "resting")
+
     def test_flag_resting(self):
         with patch('SuperMarioLevel1.data.components.castle_flag.Flag.get_image', return_value=pg.Surface((28, 28))):
             flag = Flag(200, 400)
