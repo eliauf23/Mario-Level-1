@@ -94,7 +94,10 @@ class TestEnemy(unittest.TestCase):
         enemy.falling()
         self.assertEqual(enemy.y_vel, 11)
 
-   # Don't test jumped on because placeholder method
+    def test_jumped_on(self):
+       enemy = Enemy()
+       enemy.jumped_on()
+       self.assertTrue(True);
 
     def test_death_jumping(self):
         """Test that death_jumping updates the rect and y_vel"""
@@ -102,7 +105,7 @@ class TestEnemy(unittest.TestCase):
         enemy.rect = pg.Rect(0, 0, 16, 16)
         enemy.start_death_jump(c.RIGHT)
         enemy.death_jumping()
-       
+
         #self.assertTrue(enemy.rect.bottom > 600)
         #self.assertEqual(enemy.y_vel, c.GRAVITY)
         self.assertFalse(enemy.alive())
@@ -115,6 +118,13 @@ class TestEnemy(unittest.TestCase):
         enemy.start_death_jump(c.RIGHT)
         self.assertEqual(enemy.y_vel, -8)
         self.assertEqual(enemy.x_vel, 2)
+        self.assertEqual(enemy.gravity, .5)
+        self.assertEqual(enemy.frame_index, 3)
+        self.assertEqual(enemy.image, enemy.frames[3])
+        self.assertEqual(enemy.state, c.DEATH_JUMP)
+        enemy.start_death_jump(c.LEFT)
+        self.assertEqual(enemy.y_vel, -8)
+        self.assertEqual(enemy.x_vel, -2)
         self.assertEqual(enemy.gravity, .5)
         self.assertEqual(enemy.frame_index, 3)
         self.assertEqual(enemy.image, enemy.frames[3])
