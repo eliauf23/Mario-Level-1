@@ -4,14 +4,18 @@ import SuperMarioLevel1.data.constants as c
 from SuperMarioLevel1.data.components.enemies import Enemy, Goomba, Koopa
 from unittest.mock import Mock
 
+
 class TestEnemy(unittest.TestCase):
-    
-    def setUp(self):
+
+    @classmethod
+    def setUpClass(cls):
         pg.init()
-        pg.display.set_mode(c.SCREEN_SIZE)
-       
-    
-    
+        pg.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_HEIGHT))
+
+    @classmethod
+    def tearDownClass(cls):
+        pg.quit()
+
     def test_set_velocity(self):
         """Test that set_velocity sets x_vel to negative when direction is LEFT and to positive when direction is RIGHT"""
         enemy = Enemy()
@@ -22,16 +26,14 @@ class TestEnemy(unittest.TestCase):
         enemy.set_velocity()
         self.assertTrue(enemy.x_vel > 0)
 
-    
-
     def test_get_image(self):
         """Test that get_image returns a surface with the correct dimensions"""
         enemy = Goomba()
         image = enemy.get_image(0, 0, 16, 16)
         self.assertIsInstance(image, pg.Surface)
         self.assertEqual(image.get_width(), 16 * c.SIZE_MULTIPLIER)
-        self.assertEqual(image.get_height(),  16 * c.SIZE_MULTIPLIER)
-        #self.assertEqual(image.get_colorkey(), c.BLACK)
+        self.assertEqual(image.get_height(), 16 * c.SIZE_MULTIPLIER)
+        # self.assertEqual(image.get_colorkey(), c.BLACK)
         # add more checking
 
     def test_handle_state_walking(self):
@@ -95,9 +97,9 @@ class TestEnemy(unittest.TestCase):
         self.assertEqual(enemy.y_vel, 11)
 
     def test_jumped_on(self):
-       enemy = Enemy()
-       enemy.jumped_on()
-       self.assertTrue(True);
+        enemy = Enemy()
+        enemy.jumped_on()
+        self.assertTrue(True);
 
     def test_death_jumping(self):
         """Test that death_jumping updates the rect and y_vel"""
@@ -106,8 +108,8 @@ class TestEnemy(unittest.TestCase):
         enemy.start_death_jump(c.RIGHT)
         enemy.death_jumping()
 
-        #self.assertTrue(enemy.rect.bottom > 600)
-        #self.assertEqual(enemy.y_vel, c.GRAVITY)
+        # self.assertTrue(enemy.rect.bottom > 600)
+        # self.assertEqual(enemy.y_vel, c.GRAVITY)
         self.assertFalse(enemy.alive())
 
         # add testing for enemy committing suicide
@@ -150,7 +152,6 @@ class TestEnemy(unittest.TestCase):
         enemy.handle_state.assert_called_once()
         enemy.animation.assert_called_once()
         self.assertEqual(enemy.current_time, game_info[c.CURRENT_TIME])
-        
 
     # Goomba testing
     def test_goomba_init(self):
@@ -165,8 +166,7 @@ class TestEnemy(unittest.TestCase):
         self.assertEqual(goomba.rect.x, 0)
         self.assertEqual(goomba.rect.bottom, c.GROUND_HEIGHT)
 
-
-    def test_goomba_frames(self): 
+    def test_goomba_frames(self):
         goomba = Goomba()  # calls setup_frames from constructor
         self.assertEqual(len(goomba.frames), 4)
 
@@ -181,12 +181,10 @@ class TestEnemy(unittest.TestCase):
         goomba.jumped_on()
         self.assertFalse(goomba.alive())
 
-
-
     # Koopa testing
     def test_init(self):
         koopa = Koopa(y=100, x=50, direction=c.RIGHT, name='green_koopa')
-       
+
         self.assertEqual(koopa.state, c.WALK)
         self.assertEqual(koopa.rect.bottom, 100)
         self.assertEqual(koopa.rect.x, 50)
@@ -196,12 +194,9 @@ class TestEnemy(unittest.TestCase):
         self.assertEqual(koopa.frame_index, 0)
         self.assertIsNotNone(koopa.sprite_sheet)
         self.assertIsNotNone(koopa.image)
-       
-       
-     
 
     def test_setup_frames(self):
-        koopa = Koopa(y=100, x=50, direction=c.RIGHT, name='green_koopa') # calls setup frames from constructor
+        koopa = Koopa(y=100, x=50, direction=c.RIGHT, name='green_koopa')  # calls setup frames from constructor
         self.assertEqual(len(koopa.frames), 4)
 
     def test_jumped_on(self):
@@ -209,8 +204,8 @@ class TestEnemy(unittest.TestCase):
         koopa.jumped_on()
         self.assertEqual(koopa.x_vel, 0)
         self.assertEqual(koopa.frame_index, 2)
-        #self.assertEqual(koopa.rect.bottom, koopa.frames[koopa.frame_index].get_rect().bottom)
-        #self.assertEqual(koopa.rect.x, koopa.frames[koopa.frame_index].get_rect().x)
+        # self.assertEqual(koopa.rect.bottom, koopa.frames[koopa.frame_index].get_rect().bottom)
+        # self.assertEqual(koopa.rect.x, koopa.frames[koopa.frame_index].get_rect().x)
 
     def test_shell_sliding(self):
         koopa = Koopa(y=100, x=50, direction=c.RIGHT, name='green_koopa')
@@ -219,9 +214,3 @@ class TestEnemy(unittest.TestCase):
         koopa.direction = c.LEFT
         koopa.shell_sliding()
         self.assertEqual(koopa.x_vel, -10)
-
-
-
-
-    def tearDown(self):
-        pg.quit()

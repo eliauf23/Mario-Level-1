@@ -4,15 +4,20 @@ from SuperMarioLevel1.data.components.score import Score
 import SuperMarioLevel1.data.constants as c
 from unittest.mock import MagicMock
 
+
 class TestScore(TestCase):
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         pg.init()
-        self.screen = pg.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_HEIGHT))
-        self.score = Score(100, 100, 100)
+        pg.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_HEIGHT))
 
-    def tearDown(self):
+    @classmethod
+    def tearDownClass(cls):
         pg.quit()
+
+    def setUp(self):
+        self.score = Score(100, 100, 100)
 
     def test_score_init(self):
         score1 = Score(100, 100, 100, flag_pole=True)
@@ -54,9 +59,6 @@ class TestScore(TestCase):
         self.score.update(score_list, level_info)
         self.score.check_to_delete_floating_scores(score_list, level_info)
         self.assertEqual(len(score_list), 1)
-
-
-
 
     def test_check_to_delete_floating_scores_1000(self):
         score1 = Score(100, 100, 200)

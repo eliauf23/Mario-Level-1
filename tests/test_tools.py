@@ -6,18 +6,22 @@ import SuperMarioLevel1.data.constants as c
 from unittest import TestCase
 
 
-class testTools(TestCase):
+class TestTools(TestCase):
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         pg.init()
         pg.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_HEIGHT))
+
+    @classmethod
+    def tearDownClass(cls):
+        pg.quit()
+
+    def setUp(self):
         self.caption = Mock()
         self.control = Control(self.caption)
         o = Mock()
         self.state = _State()
-
-    def tearDown(self) -> None:
-        pg.quit()
 
     def testControlInit(self):
         self.assertEqual(self.control.screen, pg.display.get_surface())
@@ -107,13 +111,13 @@ class testTools(TestCase):
         self.control.show_fps = True
         setDoneToTrue = lambda with_fps: setattr(self.control, 'done', True)
         with patch.object(self.control, "event_loop") as mock_event_loop, \
-                patch.object(pg.display, "set_caption", new=setDoneToTrue),\
+                patch.object(pg.display, "set_caption", new=setDoneToTrue), \
                 patch.object(pg.display, "update") as mock_update:
             self.control.main()
             mock_event_loop.assert_called()
             mock_update.assert_called()
 
-    #get_event is not implemented
+    # get_event is not implemented
     def test_get_event(self):
         self.state.get_event(Mock())
 
@@ -128,13 +132,6 @@ class testTools(TestCase):
         self.assertEqual(ret_val, "a")
         self.assertEqual(self.state.done, False)
 
-    #update is not implemented
+    # update is not implemented
     def test_update(self):
         self.state.update("a", "b", "c")
-
-
-
-
-
-
-

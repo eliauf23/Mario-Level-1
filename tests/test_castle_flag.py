@@ -3,6 +3,8 @@ from unittest import TestCase
 from unittest.mock import MagicMock, patch
 from SuperMarioLevel1.data.components.castle_flag import Flag
 import SuperMarioLevel1.data.constants as c
+
+
 class TestCastleFlag(TestCase):
 
     def test_flag_init(self):
@@ -32,7 +34,8 @@ class TestCastleFlag(TestCase):
 
     def test_get_image(self):
         with patch('SuperMarioLevel1.data.components.castle_flag.pg.Surface', return_value=pg.Surface((28, 28))):
-            with patch('SuperMarioLevel1.data.components.castle_flag.pg.transform.scale', return_value=pg.Surface((28, 28))):
+            with patch('SuperMarioLevel1.data.components.castle_flag.pg.transform.scale',
+                       return_value=pg.Surface((28, 28))):
                 flag = Flag(200, 400)
                 flag.sprite_sheet = pg.Surface((28, 28))
                 flag.get_image(0, 0, 28, 28)

@@ -6,14 +6,19 @@ import SuperMarioLevel1.data.constants as c
 
 
 class TestCoinBox(TestCase):
-    def setUp(self):
+
+    @classmethod
+    def setUpClass(cls):
         pg.init()
         pg.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_HEIGHT))
+
+    @classmethod
+    def tearDownClass(cls):
+        pg.quit()
+
+    def setUp(self):
         self.group = pg.sprite.Group()
         self.coin_box = Coin_box(100, 100, contents='coin', group=self.group)
-
-    def tearDown(self):
-        pg.quit()
 
     def test_coin_box_init(self):
         self.assertIsInstance(self.coin_box.image, pg.Surface)
@@ -57,6 +62,7 @@ class TestCoinBox(TestCase):
     def test_opened(self):
         # Placeholder for OPENED state, nothing to test
         pass
+
     def test_get_image(self):
         image = self.coin_box.get_image(384, 0, 16, 16)
         self.assertIsInstance(image, pg.Surface)
@@ -177,4 +183,3 @@ class TestCoinBox(TestCase):
                     self.assertEqual(coin_box.state, c.BUMPED)
                     self.assertEqual(coin_box.y_vel, -6)
                     mock_sfx['powerup_appears'].play.assert_called_once()
-

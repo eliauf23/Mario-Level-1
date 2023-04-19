@@ -10,18 +10,22 @@ from SuperMarioLevel1.data.components.powerups import FireBall
 
 
 class TestMario(TestCase):
-    def setUp(self) -> None:
+    @classmethod
+    def setUpClass(cls):
         pg.init()
         pg.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_HEIGHT))
+
+    @classmethod
+    def tearDownClass(cls):
+        pg.quit()
+
+    def setUp(self) -> None:
         self.mario = Mario()
         self.keys = {tools.keybinding['action']: False,
                      tools.keybinding['down']: False,
                      tools.keybinding['left']: False,
                      tools.keybinding['right']: False,
                      tools.keybinding['jump']: False}
-
-    def tearDown(self) -> None:
-        pg.quit()
 
     def test_init(self):
         # assert that the mario object is an instance of the Mario class
@@ -47,8 +51,8 @@ class TestMario(TestCase):
         # self.rect = self.image.get_rect()
         # self.mask = pg.mask.from_surface(self.image)
 
-        assert(self.mario.key_timer == 0)
-        assert(self.mario.state == c.WALK)
+        assert (self.mario.key_timer == 0)
+        assert (self.mario.state == c.WALK)
 
     def test_setup_timers(self):
         self.mario.setup_timers()
@@ -77,7 +81,6 @@ class TestMario(TestCase):
         self.assertEqual(self.mario.in_castle, False)
         self.assertEqual(self.mario.crouching, False)
         self.assertEqual(self.mario.losing_invincibility, False)
-
 
     def test_setup_forces(self):
         self.mario.setup_forces()
@@ -114,9 +117,8 @@ class TestMario(TestCase):
 
         # Patch the methods called within update
         with patch.object(mario, 'handle_state') as mock_handle_state, \
-             patch.object(mario, 'check_for_special_state') as mock_check_for_special_state, \
-             patch.object(mario, 'animation') as mock_animation:
-
+                patch.object(mario, 'check_for_special_state') as mock_check_for_special_state, \
+                patch.object(mario, 'animation') as mock_animation:
             # Call the update method with the mock objects
             mario.update(keys, game_info, fire_group)
 
@@ -394,7 +396,6 @@ class TestMario(TestCase):
         self.assertEqual(self.mario.frame_index, 6)
         self.assertEqual(self.mario.state, c.DEATH_JUMP)
         self.assertTrue(self.mario.in_transition_state)
-
 
     def test_check_if_invincible(self):
         self.mario.current_time = 10000

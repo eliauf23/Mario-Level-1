@@ -4,6 +4,7 @@ from unittest import TestCase
 from unittest.mock import patch
 import pygame as pg
 
+
 class TestBrick(TestCase):
 
     def test_brick_init(self):
@@ -39,6 +40,7 @@ class TestBrick(TestCase):
             brick.state = c.RESTING
             brick.update()
             self.assertEqual(brick.frame_index, 0)
+
     def test_brick_resting_coin_total_is_zero(self):
         with patch('SuperMarioLevel1.data.components.bricks.Brick.get_image', return_value=pg.Surface((16, 16))):
             brick = Brick(50, 50, contents='6coins')
@@ -56,6 +58,7 @@ class TestBrick(TestCase):
             brick.state = c.BUMPED
             brick.update()
             self.assertEqual(brick.frame_index, 0)
+
     def test_brick_bumped_star(self):
         with patch('SuperMarioLevel1.data.components.bricks.Brick.get_image', return_value=pg.Surface((16, 16))):
             brick = Brick(50, 50, contents='star')
@@ -98,6 +101,7 @@ class TestBrick(TestCase):
             brick.update()
             # state doesn't change to opened!
             self.assertEqual(brick.state, c.OPENED)
+
 
 class TestBrickPiece(TestCase):
     def test_brick_piece_init(self):
@@ -147,6 +151,3 @@ class TestBrickPiece(TestCase):
             brick_piece.update()
             brick_piece.check_if_off_screen()
             self.assertFalse(brick_piece.alive())
-
-
-

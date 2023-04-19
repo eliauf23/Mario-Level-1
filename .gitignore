@@ -3,3 +3,7 @@
 venv/
 /Mario_Level_1.egg-info/
 /tests/.pytest_cache/
+tests/.pytest_cache/*
+tests/__pycache__/
+
+__pycache__/__init__.cpython-39.pyc

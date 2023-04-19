@@ -7,20 +7,24 @@ import SuperMarioLevel1.data.setup as setup
 
 
 class TestPowerup(TestCase):
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         pg.init()
-        pg.display.set_mode(c.SCREEN_SIZE)
-        self.powerup = Powerup(0, 0)
+        pg.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_HEIGHT))
 
-    def tearDown(self):
+    @classmethod
+    def tearDownClass(cls):
         pg.quit()
+
+    def setUp(self):
+        self.powerup = Powerup(0, 0)
 
     def test_setup_powerup(self):
         pass
 
     def test_revealing(self):
         powerup = Mushroom(0, 10)
-        powerup.rect.bottom =0
+        powerup.rect.bottom = 0
         powerup.revealing()
         self.assertEqual(powerup.rect.bottom, powerup.box_height)
         self.assertEqual(powerup.y_vel, 0)
@@ -32,16 +36,19 @@ class TestPowerup(TestCase):
         self.assertTrue(True)
 
 
-
 class TestMushroom(TestCase):
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         pg.init()
-        self.screen = pg.display.set_mode((800, 600))
+        pg.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_HEIGHT))
+
+    @classmethod
+    def tearDownClass(cls):
+        pg.quit()
+
+    def setUp(self):
         self.clock = pg.time.Clock()
         self.mushroom = Mushroom(0, 0)
-
-    def tearDown(self):
-        pg.quit()
 
     def test_setup_frames(self):
         self.assertEqual(len(self.mushroom.frames), 1)
@@ -97,14 +104,18 @@ class TestMushroom(TestCase):
 
 
 class TestLifeMushroom(TestCase):
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         pg.init()
-        self.screen = pg.display.set_mode((800, 600))
+        pg.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_HEIGHT))
+
+    @classmethod
+    def tearDownClass(cls):
+        pg.quit()
+
+    def setUp(self):
         self.clock = pg.time.Clock()
         self.life_mushroom = LifeMushroom(0, 0)
-
-    def tearDown(self):
-        pg.quit()
 
     def test_setup_frames(self):
         # TODO: check if this should start at 1
@@ -138,16 +149,21 @@ class TestLifeMushroom(TestCase):
         self.life_mushroom.falling()
         self.assertEqual(self.life_mushroom.y_vel, 8)
 
+
 class TestFireFlower(TestCase):
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         pg.init()
-        self.screen = pg.display.set_mode((800, 600))
+        pg.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_HEIGHT))
+
+    @classmethod
+    def tearDownClass(cls):
+        pg.quit()
+
+    def setUp(self):
         self.clock = pg.time.Clock()
         self.fire_flower = FireFlower(0, 0)
         self.fire_flower.update({c.CURRENT_TIME: 0})
-
-    def tearDown(self):
-        pg.quit()
 
     def test_setup_frames(self):
         self.assertEqual(len(self.fire_flower.frames), 4)
@@ -207,14 +223,18 @@ class TestFireFlower(TestCase):
 
 
 class TestStar(TestCase):
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         pg.init()
-        self.screen = pg.display.set_mode((800, 600))
+        pg.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_HEIGHT))
+
+    @classmethod
+    def tearDownClass(cls):
+        pg.quit()
+
+    def setUp(self):
         self.clock = pg.time.Clock()
         self.star = Star(0, 0)
-
-    def tearDown(self):
-        pg.quit()
 
     def test_setup_frames(self):
         self.assertEqual(len(self.star.frames), 4)
@@ -233,7 +253,6 @@ class TestStar(TestCase):
         self.star.handle_state()
         self.star.bouncing.assert_called_once()
 
-
     def test_revealing(self):
         self.star.update({c.CURRENT_TIME: 0})
         self.star.state = c.REVEAL
@@ -244,7 +263,6 @@ class TestStar(TestCase):
         self.assertEqual(self.star.y_vel, -2)
         self.star.animation.assert_called_once()
 
-
     def test_falling(self):
         self.star.y_vel = 7
         self.star.falling()
@@ -252,7 +270,6 @@ class TestStar(TestCase):
         self.star.y_vel = 8
         self.star.falling()
         self.assertEqual(self.star.y_vel, 8)
-
 
     def test_sliding(self):
         self.star.direction = c.LEFT
@@ -272,7 +289,6 @@ class TestStar(TestCase):
         self.star.bouncing()
         self.assertEqual(self.star.x_vel, 5)
 
-
     def test_animation(self):
         self.star.animation_timer = 0
         self.star.current_time = 1000
@@ -288,18 +304,20 @@ class TestStar(TestCase):
         self.assertEqual(self.star.frame_index, 0)
 
 
-
-
 class TestFireBall(TestCase):
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         pg.init()
-        self.screen = pg.display.set_mode((800, 600))
+        pg.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_HEIGHT))
+
+    @classmethod
+    def tearDownClass(cls):
+        pg.quit()
+
+    def setUp(self):
         self.clock = pg.time.Clock()
         self.fire_ball = FireBall(0, 0, True)
         self.fire_ball.update({c.CURRENT_TIME: 0}, viewport=pg.Rect(0, 0, 800, 600))
-
-    def tearDown(self):
-        pg.quit()
 
     def test_init_facing_right(self):
         self.assertIsInstance(self.fire_ball, pg.sprite.Sprite)
@@ -332,10 +350,10 @@ class TestFireBall(TestCase):
     def test_get_image(self):
         image = self.fire_ball.get_image(0, 0, 16, 16)
         self.assertIsInstance(image, pg.Surface)
-        self.assertEqual(image.get_rect().size, (16* c.SIZE_MULTIPLIER, 16* c.SIZE_MULTIPLIER))
+        self.assertEqual(image.get_rect().size, (16 * c.SIZE_MULTIPLIER, 16 * c.SIZE_MULTIPLIER))
 
     def test_update(self):
-        game_info = {'current_time': 0}
+        game_info = {c.CURRENT_TIME: 0}
         viewport = pg.Rect(0, 0, 800, 600)
         self.fire_ball.handle_state = Mock()
         self.fire_ball.check_if_off_screen = Mock()
@@ -370,7 +388,6 @@ class TestFireBall(TestCase):
         self.fire_ball.animation()
         self.assertEqual(self.fire_ball.frame_index, 0)
 
-
     def test_animation_bouncing(self):
         self.fire_ball.state = c.BOUNCING
         self.fire_ball.animation_timer = 0
@@ -398,7 +415,6 @@ class TestFireBall(TestCase):
         self.fire_ball.frame_index = 6
         self.fire_ball.animation()
         self.assertFalse(self.fire_ball.alive())
-
 
     def test_explode_transition(self):
         self.fire_ball.explode_transition()

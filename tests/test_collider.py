@@ -3,11 +3,19 @@ import pygame as pg
 import SuperMarioLevel1.data.constants as c
 from SuperMarioLevel1.data.components.collider import Collider
 
+
 class TestCollider(unittest.TestCase):
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         pg.init()
-        pg.display.set_mode(c.SCREEN_SIZE)
+        pg.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_HEIGHT))
+
+    @classmethod
+    def tearDownClass(cls):
+        pg.quit()
+
+    def setUp(self):
         self.collider = Collider(0, 0, 100, 100)
 
     def test_collider_attributes(self):
@@ -23,7 +31,3 @@ class TestCollider(unittest.TestCase):
         collider1 = Collider(0, 0, 50, 50)
         collider2 = Collider(25, 25, 50, 50)
         self.assertTrue(pg.sprite.collide_rect(collider1, collider2))
-
-    def tearDown(self):
-        pg.quit()
-

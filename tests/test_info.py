@@ -4,15 +4,21 @@ from SuperMarioLevel1.data.components.info import OverheadInfo
 import SuperMarioLevel1.data.constants as c
 from unittest import TestCase
 
+
 class TestOverheadInfo(TestCase):
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         pg.init()
         pg.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_HEIGHT))
+
+    @classmethod
+    def tearDownClass(cls):
+        pg.quit()
+
+    def setUp(self):
+
         self.game_info = {c.COIN_TOTAL: 0, c.LIVES: 3, c.TOP_SCORE: 0}
         self.overhead_info = OverheadInfo(self.game_info, state=c.MAIN_MENU)
-
-    def tearDown(self) -> None:
-        pg.quit()
 
     def test_init(self):
         self.assertEqual(self.overhead_info.state, c.MAIN_MENU)
@@ -56,9 +62,9 @@ class TestOverheadInfo(TestCase):
         }
 
         self.overhead_info.state = c.MAIN_MENU
-        with patch.object(self.overhead_info, 'update_score_images') as mock_update_score_images,\
-             patch.object(self.overhead_info, 'update_coin_total') as mock_update_coin_total,\
-             patch.object(self.overhead_info.flashing_coin, 'update') as mock_flashing_coin_update:
+        with patch.object(self.overhead_info, 'update_score_images') as mock_update_score_images, \
+                patch.object(self.overhead_info, 'update_coin_total') as mock_update_coin_total, \
+                patch.object(self.overhead_info.flashing_coin, 'update') as mock_flashing_coin_update:
             self.overhead_info.handle_level_state(level_info)
             mock_update_score_images.assert_called()
             mock_update_coin_total.assert_called()
@@ -99,7 +105,6 @@ class TestOverheadInfo(TestCase):
     # TODO: Add tests for the draw method
     # TODO: Add tests for other draw methods in the same manner, adjusting the state and expected call count accordingly
 
-
     def test_handle_level_state_load_screen(self):
         self.overhead_info.state = c.LOAD_SCREEN
         level_info = {c.SCORE: 100, c.COIN_TOTAL: 42}
@@ -108,6 +113,7 @@ class TestOverheadInfo(TestCase):
                 self.overhead_info.handle_level_state(level_info)
                 mock_update_score_images.assert_called_once_with(self.overhead_info.score_images, 100)
                 mock_update_coin_total.assert_called_once_with(level_info)
+
     def test_handle_level_state_level_not_dead_mario(self):
         level_info = {c.SCORE: 100, c.COIN_TOTAL: 42, c.LEVEL_STATE: c.NOT_FROZEN, c.CURRENT_TIME: 10}
         self.overhead_info.update(level_info, mario=Mock(dead=False))
@@ -118,7 +124,7 @@ class TestOverheadInfo(TestCase):
                     self.overhead_info.handle_level_state(level_info)
                     mock_update_score_images.assert_called_once_with(self.overhead_info.score_images, 100)
                     mock_update_coin_total.assert_called_once_with(level_info)
-                   #mock_update_count_down_clock.assert_called_once_with(level_info)
+                # mock_update_count_down_clock.assert_called_once_with(level_info)
 
     def test_handle_level_state_level_dead_mario(self):
         level_info = {c.SCORE: 100, c.COIN_TOTAL: 42, c.LEVEL_STATE: c.NOT_FROZEN, c.CURRENT_TIME: 10}
@@ -158,7 +164,8 @@ class TestOverheadInfo(TestCase):
             with patch.object(self.overhead_info, 'update_coin_total') as mock_update_coin_total:
                 with patch.object(self.overhead_info, 'update_count_down_clock') as mock_update_count_down_clock:
                     self.overhead_info.handle_level_state(level_info)
-                    mock_update_score_images.assert_called_once_with(self.overhead_info.score_images, self.overhead_info.score)
+                    mock_update_score_images.assert_called_once_with(self.overhead_info.score_images,
+                                                                     self.overhead_info.score)
                     mock_update_coin_total.assert_called_once_with(level_info)
                     mock_update_count_down_clock.assert_called_once_with(level_info)
 
@@ -171,6 +178,7 @@ class TestOverheadInfo(TestCase):
                 with patch.object(self.overhead_info.flashing_coin, 'update') as mock_flashing_coin_update:
                     self.overhead_info.handle_level_state(level_info)
                     mock_flashing_coin_update.assert_called_once_with(0)
+
     # Add tests for other states in the same manner, adjusting the mock calls accordingly
 
     def test_update_count_down_clock_regular(self):
@@ -257,7 +265,7 @@ class TestOverheadInfo(TestCase):
             for letter in label:
                 letter_len_label_list += 1
         total_expected_blit = score_images_len + letter_len_main_menu + coin_count_images_len + letter_len_label_list + 1
-        #^the +1 is because of line 350 in info.py
+        # ^the +1 is because of line 350 in info.py
         with patch.object(surface, "blit") as mock_blit:
             self.overhead_info.draw_main_menu_info(surface)
             self.assertEqual(mock_blit.call_count, total_expected_blit)
@@ -352,4 +360,3 @@ class TestOverheadInfo(TestCase):
 #
 #         # Assert that all expected images have been drawn
 #         self.assertEqual(len(expected_images), 0)
-

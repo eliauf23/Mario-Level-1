@@ -7,15 +7,20 @@ import SuperMarioLevel1.data.constants as c
 
 class TestFlashingCoin(TestCase):
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         pg.init()
-        pg.display.set_mode((640, 480), 0, 32)
+        pg.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_HEIGHT))
+
+    @classmethod
+    def tearDownClass(cls):
+        pg.quit()
+
+    def setUp(self):
+        # pg.display.set_mode((640, 480), 0, 32)
         setup = Mock()
         setup.GFX = {'item_objects': pg.Surface((10, 10))}
         self.coin = Coin(0, 0)
-
-    def tearDown(self):
-        pg.quit()
 
     def test_create_frames(self):
         self.assertEqual(len(self.coin.frames), 3)
@@ -34,7 +39,7 @@ class TestFlashingCoin(TestCase):
         self.coin_flashing.frame_index = 0
         # mock the timer
         self.coin_flashing.timer = pg.time.get_ticks()
-        self.current_time =  self.coin_flashing.timer+ 400
+        self.current_time = self.coin_flashing.timer + 400
         self.assertEqual(self.coin_flashing.frame_index, 0)
         self.coin_flashing.update(self.current_time)
         self.assertEqual(self.coin_flashing.frame_index, 1)

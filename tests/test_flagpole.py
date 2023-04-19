@@ -4,13 +4,20 @@ from unittest.mock import MagicMock, patch
 from SuperMarioLevel1.data.components.flagpole import Flag, Pole, Finial
 import SuperMarioLevel1.data.constants as c
 
-class TestFlag(TestCase):
-    def setUp(self):
-        pg.init()
-        self.flag = Flag(0, 0)
 
-    def tearDown(self):
+class TestFlag(TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        pg.init()
+        pg.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_HEIGHT))
+
+    @classmethod
+    def tearDownClass(cls):
         pg.quit()
+
+    def setUp(self):
+        self.flag = Flag(0, 0)
 
     def test_initialization(self):
         assert self.flag.rect.right == 0
@@ -57,13 +64,21 @@ class TestFlag(TestCase):
         with patch.object(self.flag, 'handle_state') as mock_handle_state:
             self.flag.update()
             mock_handle_state.assert_called_once()
-class TestPole(TestCase):
-    def setUp(self):
-        pg.init()
-        self.pole = Pole(0, 0)
 
-    def tearDown(self):
+
+class TestPole(TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        pg.init()
+        pg.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_HEIGHT))
+
+    @classmethod
+    def tearDownClass(cls):
         pg.quit()
+
+    def setUp(self):
+        self.pole = Pole(0, 0)
 
     def test_initialization(self):
         assert self.pole.rect.x == 0
@@ -83,13 +98,20 @@ class TestPole(TestCase):
         self.pole.update()
         self.assertEqual(self.pole.rect, initial_rect)
 
-class TestFinial(TestCase):
-    def setUp(self):
-        pg.init()
-        self.finial = Finial(0, 0)
 
-    def tearDown(self):
+class TestFinial(TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        pg.init()
+        pg.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_HEIGHT))
+
+    @classmethod
+    def tearDownClass(cls):
         pg.quit()
+
+    def setUp(self):
+        self.finial = Finial(0, 0)
 
     def test_initialization(self):
         assert self.finial.rect.centerx == 0
