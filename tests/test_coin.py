@@ -69,6 +69,7 @@ class TestCoin(TestCase):
             self.assertEqual(s1.get_offset(), s2.get_offset())
             self.assertEqual(initial_frame_index + 1, self.coin.frame_index)
 
+
     def test_get_image_different_values(self):
         img1 = self.coin.get_image(0, 0, 8, 14)
         img2 = self.coin.get_image(52, 113, 8, 14)
@@ -111,3 +112,13 @@ class TestCoin(TestCase):
                     200
                 )
                 self.assertIn(mock_score.return_value, self.score_group)
+
+    def test_spinning_frame_index_not_updated(self):
+        self.coin.frames = [1, 2, 3, 4, 5]
+        self.coin.frame_index = 4
+        self.coin.current_time = 120
+        self.coin.animation_timer = 30
+        self.assertGreater((self.coin.current_time - self.coin.animation_timer), 80)
+        self.assertFalse(self.coin.frame_index < 3)
+        self.coin.spinning()
+        self.assertEqual(self.coin.frame_index, 0)

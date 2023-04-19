@@ -2,7 +2,7 @@ import unittest
 import pygame as pg
 import SuperMarioLevel1.data.constants as c
 from SuperMarioLevel1.data.components.enemies import Enemy, Goomba, Koopa
-from unittest.mock import Mock
+from unittest.mock import Mock, MagicMock
 
 
 class TestEnemy(unittest.TestCase):
@@ -70,6 +70,19 @@ class TestEnemy(unittest.TestCase):
         enemy.death_jumping = Mock()
         enemy.handle_state()
         enemy.death_jumping.assert_called_once()
+
+    def test_death_jumping_enemy_killed(self):
+        enemy = Enemy()
+
+        def mock_setup_frames():
+            mock_image = MagicMock(spec=pg.Surface)
+            enemy.frames.append(mock_image)
+
+        enemy.setup_enemy(0, 700, c.RIGHT, 'test_enemy', mock_setup_frames)
+        enemy.frame_index = 0
+        enemy.rect.y = 700
+        enemy.death_jumping()
+        self.assertFalse(enemy.alive())
 
     def test_walking(self):
         """Test that walking updates the frame_index"""

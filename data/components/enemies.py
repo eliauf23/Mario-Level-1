@@ -83,7 +83,7 @@ class Enemy(pg.sprite.Sprite):
 
     def jumped_on(self):
         """Placeholder for when the enemy is stomped on"""
-        pass
+        pass # pragma: no cover
 
     def death_jumping(self):
         """Death animation"""

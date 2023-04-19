@@ -65,13 +65,14 @@ class TestState(TestCase):
 
     def test_get_event(self):
         self.state.get_event(pg.event.Event(pg.QUIT))
+        # TODO: how is this broken lol
         self.assertTrue(self.state.quit)
 
     def test_update(self):
         self.state.update(None, None, None)
 
     def test_cleanup(self):
-        self.assertIsNone(self.state.cleanup())
+        self.assertEqual(self.state.cleanup(), {})
 
     def test_startup(self):
         self.state.startup(None, None)

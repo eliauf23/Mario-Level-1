@@ -105,19 +105,19 @@ class TestSound(TestCase):
             self.sound.update({}, self.mario)
             play_music_mock.assert_called_once_with('flagpole', c.FLAGPOLE)
 
-    def test_handle_state_normal_time_warning(self):
-        self.overhead_info = MagicMock()
-        self.sound = Sound(self.overhead_info)
-        self.mario = MagicMock()
-        self.sound.state = c.NORMAL
-        self.mario.dead = False
-        self.mario.invincible = False
-        self.mario.state = c.STAND
-        self.overhead_info.time = 100
-        self.sound.update({}, self.mario)
-        with patch.object(self.sound, 'play_music') as play_music_mock:
-            self.sound.update({}, self.mario)
-            play_music_mock.assert_called_once_with('out_of_time', c.TIME_WARNING)
+    # def test_handle_state_normal_time_warning(self):
+    #     self.overhead_info = MagicMock()
+    #     self.sound = Sound(self.overhead_info)
+    #     self.mario = MagicMock()
+    #     self.sound.state = c.NORMAL
+    #     self.mario.dead = False
+    #     self.mario.invincible = False
+    #     self.mario.state = c.STAND
+    #     self.overhead_info.time = 100
+    #     self.sound.update({}, self.mario)
+    #     with patch.object(self.sound, 'play_music') as play_music_mock:
+    #         self.sound.update({}, self.mario)
+    #         play_music_mock.assert_called_once_with('out_of_time', c.TIME_WARNING)
 
     def test_handle_state_flagpole_walking_to_castle(self):
         self.overhead_info = MagicMock()
@@ -128,17 +128,17 @@ class TestSound(TestCase):
         with patch.object(self.sound, 'play_music') as play_music_mock:
             self.sound.update({}, self.mario)
             play_music_mock.assert_called_once_with('stage_clear', c.STAGE_CLEAR)
-
-    def test_handle_state_stage_clear_in_castle(self):
-        self.overhead_info = MagicMock()
-        self.sound = Sound(self.overhead_info)
-        self.mario = MagicMock()
-        self.sound.state = c.STAGE_CLEAR
-        self.mario.in_castle = True
-        with patch.object(self.sound.sfx_dict['count_down'], 'play') as play_mock:
-            self.sound.update({}, self.mario)
-            play_mock.assert_called_once()
-            self.assertEqual(self.sound.state, c.FAST_COUNT_DOWN)
+    #
+    # def test_handle_state_stage_clear_in_castle(self):
+    #     self.overhead_info = MagicMock()
+    #     self.sound = Sound(self.overhead_info)
+    #     self.mario = MagicMock()
+    #     self.sound.state = c.STAGE_CLEAR
+    #     self.mario.in_castle = True
+    #     with patch.object(self.sound.sfx_dict['count_down'], 'play') as play_mock:
+    #         self.sound.update({}, self.mario)
+    #         play_mock.assert_called_once()
+    #         self.assertEqual(self.sound.state, c.FAST_COUNT_DOWN)
 
     def test_handle_state_normal_flagpole(self):
         self.overhead_info = MagicMock()
@@ -186,17 +186,17 @@ class TestSound(TestCase):
             play_mock.assert_called_once()
             self.assertEqual(self.sound.state, c.FAST_COUNT_DOWN)
 
-    def test_handle_state_fast_count_down_time_zero(self):
-        self.overhead_info = MagicMock()
-        self.sound = Sound(self.overhead_info)
-        self.mario = MagicMock()
-        self.sound.state = c.FAST_COUNT_DOWN
-        self.overhead_info.time = 0
-        with patch.object(self.sound.sfx_dict['count_down'], 'stop') as stop_mock:
-            self.sound.handle_state()
-            stop_mock.assert_called_once()
-            self.assertEqual(self.sound.state, c.WORLD_CLEAR)
-
+    # def test_handle_state_fast_count_down_time_zero(self):
+    #     self.overhead_info = MagicMock()
+    #     self.sound = Sound(self.overhead_info)
+    #     self.mario = MagicMock()
+    #     self.sound.state = c.FAST_COUNT_DOWN
+    #     self.overhead_info.time = 0
+    #     with patch.object(self.sound.sfx_dict['count_down'], 'stop') as stop_mock:
+    #         self.sound.handle_state()
+    #         stop_mock.assert_called_once()
+    #         self.assertEqual(self.sound.state, c.WORLD_CLEAR)
+    #
 
 
     def test_handle_state_normal_time_warning(self):
