@@ -1392,3 +1392,89 @@ class TestMario(TestCase):
         self.assertEqual(self.mario.invincible_animation_timer, self.mario.current_time)
         self.assertEqual(self.mario.right_frames, self.mario.invincible_big_frames_list[self.mario.invincible_index][0])
         self.assertEqual(self.mario.left_frames, self.mario.invincible_big_frames_list[self.mario.invincible_index][1])
+
+    def test_check_if_fire(self):
+        self.mario.fire = True
+        self.mario.invincible = False
+        self.mario.check_if_fire()
+        self.assertEqual(self.mario.right_frames, self.mario.fire_frames[0])
+        self.assertEqual(self.mario.left_frames, self.mario.fire_frames[1])
+
+    def test_check_if_hurt_invincible_inner_if(self):
+        self.mario.current_time = 1
+        self.mario.hurt_invincible = True
+        self.mario.state = c.SMALL_TO_BIG
+        self.mario.hurt_invisible_timer2 = 0
+        self.mario.check_if_hurt_invincible()
+        self.assertEqual(self.mario.hurt_invisible_timer2, self.mario.current_time)
+
+    def test_check_if_hurt_invincible_inner_elif(self):
+        self.mario.current_time = 1
+        self.mario.hurt_invincible = True
+        self.mario.state = c.SMALL_TO_BIG
+        self.mario.hurt_invisible_timer2 = 1
+        self.mario.check_if_hurt_invincible()
+        self.assertEqual(self.mario.hurt_invisible_timer2, self.mario.current_time)
+        with patch.object(self.mario, 'hurt_invincible_check') as mock_hurt_invincible_check:
+            self.mario.check_if_hurt_invincible()
+            mock_hurt_invincible_check.assert_called_once_with()
+
+    def test_check_if_hurt_invincible_inner_else(self):
+        self.mario.current_time = 3000
+        self.mario.hurt_invincible = True
+        self.mario.state = c.SMALL_TO_BIG
+        self.mario.hurt_invisible_timer2 = 10
+        self.mario.check_if_hurt_invincible()
+        self.assertFalse(self.mario.hurt_invincible)
+        self.assertEqual(self.mario.hurt_invisible_timer, 0)
+        self.assertEqual(self.mario.hurt_invisible_timer2, 0)
+
+    def test_hurt_invincible_check_case_1(self):
+        self.mario.hurt_invisible_timer = 0
+        self.mario.current_time = 10
+        self.mario.hurt_invincible_check()
+        self.assertEqual(self.mario.hurt_invisible_timer, self.mario.current_time)
+
+    def test_hurt_invincible_check_case_2(self):
+        self.mario.hurt_invisible_timer = 1
+        self.mario.current_time = 10
+        self.mario.image = MagicMock()
+        with patch.object(self.mario.image, "set_alpha") as mock_set_alpha:
+            self.mario.hurt_invincible_check()
+            mock_set_alpha.assert_called_once_with(0)
+
+    def test_hurt_invincible_check_case_3(self):
+        self.mario.hurt_invisible_timer = 1
+        self.mario.current_time = 60
+        self.mario.image = MagicMock()
+        with patch.object(self.mario.image, "set_alpha") as mock_set_alpha:
+            self.mario.hurt_invincible_check()
+            mock_set_alpha.assert_called_once_with(255)
+            self.assertEqual(self.mario.hurt_invisible_timer, self.mario.current_time)
+
+    def test_check_if_crouching_else_branch(self):
+        self.mario.crouching = True
+        self.mario.big = True
+        self.mario.image = MagicMock()
+        self.mario.facing_right = False
+        self.mario.check_if_crouching()
+        self.assertEqual(self.mario.image, self.mario.left_frames[7])
+
+    # this does nothing as the first case in animation is "pass"
+    def test_animation_case_1(self):
+        self.mario.crouching = True
+        self.mario.animation()
+
+    def test_animation_case_2(self):
+        self.mario.state = c.END_OF_LEVEL_FALL
+        self.mario.crouching = False
+        self.mario.facing_right = True
+        self.mario.animation()
+        self.assertEqual(self.mario.image, self.mario.right_frames[self.mario.frame_index])
+
+    def test_animation_case_3(self):
+        self.mario.state = c.END_OF_LEVEL_FALL
+        self.mario.crouching = False
+        self.mario.facing_right = False
+        self.mario.animation()
+        self.assertEqual(self.mario.image, self.mario.left_frames[self.mario.frame_index])
