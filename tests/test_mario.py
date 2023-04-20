@@ -558,6 +558,19 @@ class TestMario(TestCase):
         self.assertEqual(self.mario.rect.bottom, 100)
         self.assertEqual(self.mario.rect.centerx, 50)
 
+    def test_set_mario_to_middle_image_not_facing_right(self):
+        self.mario.current_time = 100
+        self.mario.transition_timer = 50
+        self.mario.fire_transition_timer = 50
+        self.mario.rect.bottom = 100
+        self.mario.rect.centerx = 50
+
+        self.mario.facing_right = False
+        self.mario.set_mario_to_middle_image()
+        self.assertEqual(self.mario.image, self.mario.normal_small_frames[1][7])
+        self.assertEqual(self.mario.rect.bottom, 100)
+        self.assertEqual(self.mario.rect.centerx, 50)
+
     def test_set_mario_to_small_image(self):
         self.mario.current_time = 100
         self.mario.transition_timer = 50
@@ -571,6 +584,19 @@ class TestMario(TestCase):
         self.assertEqual(self.mario.rect.bottom, 100)
         self.assertEqual(self.mario.rect.centerx, 50)
 
+    def test_set_mario_to_small_image_not_facing_right(self):
+        self.mario.current_time = 100
+        self.mario.transition_timer = 50
+        self.mario.fire_transition_timer = 50
+        self.mario.rect.bottom = 100
+        self.mario.rect.centerx = 50
+
+        self.mario.facing_right = False
+        self.mario.set_mario_to_small_image()
+        self.assertEqual(self.mario.image, self.mario.normal_small_frames[1][0])
+        self.assertEqual(self.mario.rect.bottom, 100)
+        self.assertEqual(self.mario.rect.centerx, 50)
+
     def test_set_mario_to_big_image(self):
         self.mario.current_time = 100
         self.mario.transition_timer = 50
@@ -581,6 +607,19 @@ class TestMario(TestCase):
         self.mario.facing_right = True
         self.mario.set_mario_to_big_image()
         self.assertEqual(self.mario.image, self.mario.normal_big_frames[0][0])
+        self.assertEqual(self.mario.rect.bottom, 100)
+        self.assertEqual(self.mario.rect.centerx, 50)
+
+    def test_set_mario_to_big_image_not_facing_right(self):
+        self.mario.current_time = 100
+        self.mario.transition_timer = 50
+        self.mario.fire_transition_timer = 50
+        self.mario.rect.bottom = 100
+        self.mario.rect.centerx = 50
+
+        self.mario.facing_right = False
+        self.mario.set_mario_to_big_image()
+        self.assertEqual(self.mario.image, self.mario.normal_big_frames[1][0])
         self.assertEqual(self.mario.rect.bottom, 100)
         self.assertEqual(self.mario.rect.centerx, 50)
 
@@ -604,6 +643,166 @@ class TestMario(TestCase):
         self.assertTrue(self.mario.in_transition_state)
         # self.assertEqual(self.mario.image, self.mario.right_fire_frames[3])
 
+    def test_changing_to_fire_not_facing_right(self):
+        self.mario.current_time = 100
+        self.mario.facing_right = False
+        self.mario.changing_to_fire()
+        self.assertTrue(self.mario.in_transition_state)
+
+    #note these next tests are for the final elifs in changing_to_fire
+    def test_changing_to_fire_1(self):
+        self.mario.facing_right = True
+        self.mario.current_time = 100
+        self.mario.fire_transition_timer = 1
+        self.mario.changing_to_fire()
+        self.assertEqual(self.mario.image, self.mario.right_fire_frames[3])
+
+    def test_changing_to_fire_2(self):
+        self.mario.facing_right = True
+        self.mario.current_time = 195
+        self.mario.fire_transition_timer = 1
+        self.mario.changing_to_fire()
+        self.assertEqual(self.mario.image, self.mario.right_big_green_frames[3])
+
+    def test_changing_to_fire_3(self):
+        self.mario.facing_right = True
+        self.mario.current_time = 260
+        self.mario.fire_transition_timer = 1
+        self.mario.changing_to_fire()
+        self.assertEqual(self.mario.image, self.mario.right_big_red_frames[3])
+
+    def test_changing_to_fire_4(self):
+        self.mario.facing_right = True
+        self.mario.current_time = 325
+        self.mario.fire_transition_timer = 1
+        self.mario.changing_to_fire()
+        self.assertEqual(self.mario.image, self.mario.right_big_black_frames[3])
+
+    def test_changing_to_fire_5(self):
+        frames = [self.mario.right_fire_frames[3],
+                  self.mario.right_big_green_frames[3],
+                  self.mario.right_big_red_frames[3],
+                  self.mario.right_big_black_frames[3]]
+        self.mario.facing_right = True
+        self.mario.current_time = 390
+        self.mario.fire_transition_timer = 1
+        self.mario.changing_to_fire()
+        self.assertEqual(self.mario.image, frames[0])
+
+    def test_changing_to_fire_6(self):
+        frames = [self.mario.right_fire_frames[3],
+                  self.mario.right_big_green_frames[3],
+                  self.mario.right_big_red_frames[3],
+                  self.mario.right_big_black_frames[3]]
+        self.mario.facing_right = True
+        self.mario.current_time = 455
+        self.mario.fire_transition_timer = 1
+        self.mario.changing_to_fire()
+        self.assertEqual(self.mario.image, frames[1])
+
+    def test_changing_to_fire_7(self):
+        frames = [self.mario.right_fire_frames[3],
+                  self.mario.right_big_green_frames[3],
+                  self.mario.right_big_red_frames[3],
+                  self.mario.right_big_black_frames[3]]
+        self.mario.facing_right = True
+        self.mario.current_time = 520
+        self.mario.fire_transition_timer = 1
+        self.mario.changing_to_fire()
+        self.assertEqual(self.mario.image, frames[2])
+
+    def test_changing_to_fire_8(self):
+        frames = [self.mario.right_fire_frames[3],
+                  self.mario.right_big_green_frames[3],
+                  self.mario.right_big_red_frames[3],
+                  self.mario.right_big_black_frames[3]]
+        self.mario.facing_right = True
+        self.mario.current_time = 585
+        self.mario.fire_transition_timer = 1
+        self.mario.changing_to_fire()
+        self.assertEqual(self.mario.image, frames[3])
+
+    def test_changing_to_fire_9(self):
+        frames = [self.mario.right_fire_frames[3],
+                  self.mario.right_big_green_frames[3],
+                  self.mario.right_big_red_frames[3],
+                  self.mario.right_big_black_frames[3]]
+        self.mario.facing_right = True
+        self.mario.current_time = 650
+        self.mario.fire_transition_timer = 1
+        self.mario.changing_to_fire()
+        self.assertEqual(self.mario.image, frames[0])
+
+    def test_changing_to_fire_10(self):
+        frames = [self.mario.right_fire_frames[3],
+                  self.mario.right_big_green_frames[3],
+                  self.mario.right_big_red_frames[3],
+                  self.mario.right_big_black_frames[3]]
+        self.mario.facing_right = True
+        self.mario.current_time = 715
+        self.mario.fire_transition_timer = 1
+        self.mario.changing_to_fire()
+        self.assertEqual(self.mario.image, frames[1])
+
+    def test_changing_to_fire_11(self):
+        frames = [self.mario.right_fire_frames[3],
+                  self.mario.right_big_green_frames[3],
+                  self.mario.right_big_red_frames[3],
+                  self.mario.right_big_black_frames[3]]
+        self.mario.facing_right = True
+        self.mario.current_time = 780
+        self.mario.fire_transition_timer = 1
+        self.mario.changing_to_fire()
+        self.assertEqual(self.mario.image, frames[2])
+
+    def test_changing_to_fire_12(self):
+        frames = [self.mario.right_fire_frames[3],
+                  self.mario.right_big_green_frames[3],
+                  self.mario.right_big_red_frames[3],
+                  self.mario.right_big_black_frames[3]]
+        self.mario.facing_right = True
+        self.mario.current_time = 845
+        self.mario.fire_transition_timer = 1
+        self.mario.changing_to_fire()
+        self.assertEqual(self.mario.image, frames[3])
+
+    def test_changing_to_fire_13(self):
+        frames = [self.mario.right_fire_frames[3],
+                  self.mario.right_big_green_frames[3],
+                  self.mario.right_big_red_frames[3],
+                  self.mario.right_big_black_frames[3]]
+        self.mario.facing_right = True
+        self.mario.current_time = 910
+        self.mario.fire_transition_timer = 1
+        self.mario.changing_to_fire()
+        self.assertEqual(self.mario.image, frames[0])
+
+    def test_changing_to_fire_14(self):
+        frames = [self.mario.right_fire_frames[3],
+                  self.mario.right_big_green_frames[3],
+                  self.mario.right_big_red_frames[3],
+                  self.mario.right_big_black_frames[3]]
+        self.mario.facing_right = True
+        self.mario.current_time = 975
+        self.mario.fire_transition_timer = 1
+        self.mario.changing_to_fire()
+        self.assertEqual(self.mario.image, frames[1])
+
+    def test_changing_to_fire_15(self):
+        frames = [self.mario.right_fire_frames[3],
+                  self.mario.right_big_green_frames[3],
+                  self.mario.right_big_red_frames[3],
+                  self.mario.right_big_black_frames[3]]
+        self.mario.facing_right = True
+        self.mario.current_time = 1040
+        self.mario.fire_transition_timer = 1
+        self.mario.changing_to_fire()
+        self.assertEqual(self.mario.image, frames[2])
+        self.assertTrue(self.mario.fire)
+        self.assertFalse(self.mario.in_transition_state)
+        self.assertEqual(self.mario.state, c.WALK)
+        self.assertEqual(self.mario.transition_timer, 0)
+
     def test_changing_to_small(self):
         self.mario.current_time = 100
         self.mario.transition_timer = 50
@@ -617,6 +816,214 @@ class TestMario(TestCase):
         self.assertTrue(self.mario.hurt_invincible)
         self.assertEqual(self.mario.state, c.BIG_TO_SMALL)
         self.assertEqual(self.mario.image, self.mario.right_big_normal_frames[4])
+
+    # next tests are checking all the elifs in changing_to_small
+    def test_changing_to_small_1(self):
+        frames = [self.mario.right_big_normal_frames[4],
+                  self.mario.right_big_normal_frames[8],
+                  self.mario.right_small_normal_frames[8]
+                  ]
+        self.mario.current_time = 330
+        self.mario.transition_timer = 1
+        self.mario.fire_transition_timer = 50
+        self.mario.rect.bottom = 100
+        self.mario.rect.centerx = 50
+
+        self.mario.facing_right = True
+        self.mario.changing_to_small()
+        self.assertTrue(self.mario.in_transition_state)
+        self.assertTrue(self.mario.hurt_invincible)
+        self.assertEqual(self.mario.state, c.BIG_TO_SMALL)
+        self.assertEqual(self.mario.image, frames[1])
+
+    def test_changing_to_small_2(self):
+        frames = [self.mario.right_big_normal_frames[4],
+                  self.mario.right_big_normal_frames[8],
+                  self.mario.right_small_normal_frames[8]
+                  ]
+        self.mario.current_time = 395
+        self.mario.transition_timer = 1
+        self.mario.fire_transition_timer = 50
+        self.mario.rect.bottom = 100
+        self.mario.rect.centerx = 50
+
+        self.mario.facing_right = True
+        self.mario.changing_to_small()
+        self.assertTrue(self.mario.in_transition_state)
+        self.assertTrue(self.mario.hurt_invincible)
+        self.assertEqual(self.mario.state, c.BIG_TO_SMALL)
+        self.assertEqual(self.mario.image, frames[2])
+
+    def test_changing_to_small_3(self):
+        frames = [self.mario.right_big_normal_frames[4],
+                  self.mario.right_big_normal_frames[8],
+                  self.mario.right_small_normal_frames[8]
+                  ]
+        self.mario.current_time = 460
+        self.mario.transition_timer = 1
+        self.mario.fire_transition_timer = 50
+        self.mario.rect.bottom = 100
+        self.mario.rect.centerx = 50
+
+        self.mario.facing_right = True
+        self.mario.changing_to_small()
+        self.assertTrue(self.mario.in_transition_state)
+        self.assertTrue(self.mario.hurt_invincible)
+        self.assertEqual(self.mario.state, c.BIG_TO_SMALL)
+        self.assertEqual(self.mario.image, frames[1])
+    def test_changing_to_small_4(self):
+        frames = [self.mario.right_big_normal_frames[4],
+                  self.mario.right_big_normal_frames[8],
+                  self.mario.right_small_normal_frames[8]
+                  ]
+        self.mario.current_time = 525
+        self.mario.transition_timer = 1
+        self.mario.fire_transition_timer = 50
+        self.mario.rect.bottom = 100
+        self.mario.rect.centerx = 50
+
+        self.mario.facing_right = True
+        self.mario.changing_to_small()
+        self.assertTrue(self.mario.in_transition_state)
+        self.assertTrue(self.mario.hurt_invincible)
+        self.assertEqual(self.mario.state, c.BIG_TO_SMALL)
+        self.assertEqual(self.mario.image, frames[2])
+
+    def test_changing_to_small_5(self):
+        frames = [self.mario.right_big_normal_frames[4],
+                  self.mario.right_big_normal_frames[8],
+                  self.mario.right_small_normal_frames[8]
+                  ]
+        self.mario.current_time = 590
+        self.mario.transition_timer = 1
+        self.mario.fire_transition_timer = 50
+        self.mario.rect.bottom = 100
+        self.mario.rect.centerx = 50
+
+        self.mario.facing_right = True
+        self.mario.changing_to_small()
+        self.assertTrue(self.mario.in_transition_state)
+        self.assertTrue(self.mario.hurt_invincible)
+        self.assertEqual(self.mario.state, c.BIG_TO_SMALL)
+        self.assertEqual(self.mario.image, frames[1])
+
+    def test_changing_to_small_6(self):
+        frames = [self.mario.right_big_normal_frames[4],
+                  self.mario.right_big_normal_frames[8],
+                  self.mario.right_small_normal_frames[8]
+                  ]
+        self.mario.current_time = 655
+        self.mario.transition_timer = 1
+        self.mario.fire_transition_timer = 50
+        self.mario.rect.bottom = 100
+        self.mario.rect.centerx = 50
+
+        self.mario.facing_right = True
+        self.mario.changing_to_small()
+        self.assertTrue(self.mario.in_transition_state)
+        self.assertTrue(self.mario.hurt_invincible)
+        self.assertEqual(self.mario.state, c.BIG_TO_SMALL)
+        self.assertEqual(self.mario.image, frames[2])
+
+    def test_changing_to_small_7(self):
+        frames = [self.mario.right_big_normal_frames[4],
+                  self.mario.right_big_normal_frames[8],
+                  self.mario.right_small_normal_frames[8]
+                  ]
+        self.mario.current_time = 720
+        self.mario.transition_timer = 1
+        self.mario.fire_transition_timer = 50
+        self.mario.rect.bottom = 100
+        self.mario.rect.centerx = 50
+
+        self.mario.facing_right = True
+        self.mario.changing_to_small()
+        self.assertTrue(self.mario.in_transition_state)
+        self.assertTrue(self.mario.hurt_invincible)
+        self.assertEqual(self.mario.state, c.BIG_TO_SMALL)
+        self.assertEqual(self.mario.image, frames[1])
+
+    def test_changing_to_small_8(self):
+        frames = [self.mario.right_big_normal_frames[4],
+                  self.mario.right_big_normal_frames[8],
+                  self.mario.right_small_normal_frames[8]
+                  ]
+        self.mario.current_time = 785
+        self.mario.transition_timer = 1
+        self.mario.fire_transition_timer = 50
+        self.mario.rect.bottom = 100
+        self.mario.rect.centerx = 50
+
+        self.mario.facing_right = True
+        self.mario.changing_to_small()
+        self.assertTrue(self.mario.in_transition_state)
+        self.assertTrue(self.mario.hurt_invincible)
+        self.assertEqual(self.mario.state, c.BIG_TO_SMALL)
+        self.assertEqual(self.mario.image, frames[2])
+
+    def test_changing_to_small_9(self):
+        frames = [self.mario.right_big_normal_frames[4],
+                  self.mario.right_big_normal_frames[8],
+                  self.mario.right_small_normal_frames[8]
+                  ]
+        self.mario.current_time = 850
+        self.mario.transition_timer = 1
+        self.mario.fire_transition_timer = 50
+        self.mario.rect.bottom = 100
+        self.mario.rect.centerx = 50
+
+        self.mario.facing_right = True
+        self.mario.changing_to_small()
+        self.assertTrue(self.mario.in_transition_state)
+        self.assertTrue(self.mario.hurt_invincible)
+        self.assertEqual(self.mario.state, c.BIG_TO_SMALL)
+        self.assertEqual(self.mario.image, frames[1])
+
+    def test_changing_to_small_10(self):
+        frames = [self.mario.right_big_normal_frames[4],
+                  self.mario.right_big_normal_frames[8],
+                  self.mario.right_small_normal_frames[8]
+                  ]
+        self.mario.current_time = 915
+        self.mario.transition_timer = 1
+        self.mario.fire_transition_timer = 50
+        self.mario.rect.bottom = 100
+        self.mario.rect.centerx = 50
+
+        self.mario.facing_right = True
+        self.mario.changing_to_small()
+        self.assertFalse(self.mario.in_transition_state)
+        self.assertTrue(self.mario.hurt_invincible)
+        self.assertEqual(self.mario.state, c.WALK)
+        self.assertEqual(self.mario.image, frames[2])
+
+
+    def test_changing_to_small_transition_timer_zero(self):
+        self.mario.current_time = 100
+        self.mario.transition_timer = 0
+        self.mario.fire_transition_timer = 50
+        self.mario.rect.bottom = 100
+        self.mario.rect.centerx = 50
+
+        self.mario.facing_right = True
+        self.mario.changing_to_small()
+        self.assertEqual(self.mario.transition_timer, self.mario.current_time)
+        self.assertTrue(self.mario.in_transition_state)
+        self.assertTrue(self.mario.hurt_invincible)
+        self.assertEqual(self.mario.state, c.BIG_TO_SMALL)
+    def test_changing_to_small_not_facing_right(self):
+        self.mario.current_time = 100
+        self.mario.transition_timer = 50
+        self.mario.fire_transition_timer = 50
+        self.mario.rect.bottom = 100
+        self.mario.rect.centerx = 50
+
+        self.mario.facing_right = False
+        self.mario.changing_to_small()
+        self.assertTrue(self.mario.in_transition_state)
+        self.assertTrue(self.mario.hurt_invincible)
+        self.assertEqual(self.mario.state, c.BIG_TO_SMALL)
+        self.assertEqual(self.mario.image, self.mario.left_big_normal_frames[4])
 
     def test_adjust_rect(self):
         self.mario.adjust_rect()
@@ -650,6 +1057,100 @@ class TestMario(TestCase):
         self.assertTrue(self.mario.in_transition_state)
         self.assertEqual(self.mario.image, self.mario.right_small_normal_frames[0])
 
+    def test_flag_pole_sliding_elif_line_918(self):
+        self.mario.current_time = 100
+        self.mario.transition_timer = 50
+        self.mario.fire_transition_timer = 50
+        self.mario.rect.bottom = 100
+        self.mario.rect.centerx = 50
+        self.mario.flag_pole_timer = 1
+        self.mario.flag_pole_right = 60
+        self.mario.flag_pole_sliding()
+        self.assertEqual(self.mario.state, c.FLAGPOLE)
+        self.assertTrue(self.mario.in_transition_state)
+        self.assertEqual(self.mario.image, self.mario.right_frames[10])
+
+    def test_flag_pole_sliding_if_line_916(self):
+        self.mario.current_time = 65
+        self.mario.transition_timer = 50
+        self.mario.fire_transition_timer = 50
+        self.mario.rect.bottom = 100
+        self.mario.rect.centerx = 50
+        self.mario.flag_pole_timer = 1
+        self.mario.flag_pole_right = 60
+        self.mario.flag_pole_sliding()
+        self.assertEqual(self.mario.state, c.FLAGPOLE)
+        self.assertTrue(self.mario.in_transition_state)
+        self.assertEqual(self.mario.image, self.mario.right_frames[9])
+
+    def test_flag_pole_sliding_elif_line_920(self):
+        self.mario.current_time = 131
+        self.mario.transition_timer = 50
+        self.mario.fire_transition_timer = 50
+        self.mario.rect.bottom = 100
+        self.mario.rect.centerx = 50
+        self.mario.flag_pole_timer = 1
+        self.mario.flag_pole_right = 60
+        self.mario.flag_pole_sliding()
+        self.assertEqual(self.mario.state, c.FLAGPOLE)
+        self.assertTrue(self.mario.in_transition_state)
+        self.assertEqual(self.mario.flag_pole_timer, self.mario.current_time)
+        # self.assertEqual(self.mario.image, self.mario.right_frames[9])
+
+    def test_flag_pole_sliding_rect_bottom_488(self):
+        self.mario.current_time = 100
+        self.mario.transition_timer = 50
+        self.mario.fire_transition_timer = 50
+        self.mario.rect.bottom = 488
+        self.mario.rect.centerx = 50
+        self.mario.flag_pole_timer = 1
+        self.mario.flag_pole_right = 60
+        self.mario.flag_pole_sliding()
+        self.assertEqual(self.mario.state, c.FLAGPOLE)
+        self.assertTrue(self.mario.in_transition_state)
+        self.assertEqual(self.mario.flag_pole_timer, self.mario.current_time)
+
+    def test_flag_pole_sliding_rect_bottom_493(self):
+        self.mario.current_time = 100
+        self.mario.transition_timer = 50
+        self.mario.fire_transition_timer = 50
+        self.mario.rect.bottom = 493
+        self.mario.rect.centerx = 50
+        self.mario.flag_pole_timer = 1
+        self.mario.flag_pole_right = 60
+        self.mario.flag_pole_sliding()
+        self.assertEqual(self.mario.state, c.FLAGPOLE)
+        self.assertTrue(self.mario.in_transition_state)
+        self.assertEqual(self.mario.image, self.mario.right_frames[10])
+
+    def test_sitting_at_bottom_of_pole_case_1(self):
+        self.mario.current_time = 1
+        self.mario.flag_pole_timer = 0
+        self.mario.sitting_at_bottom_of_pole()
+        self.assertEqual(self.mario.flag_pole_timer, self.mario.current_time)
+        self.assertEqual(self.mario.image, self.mario.left_frames[10])
+
+    def test_sitting_at_bottom_of_pole_case_2(self):
+        self.mario.current_time = 2
+        self.mario.flag_pole_timer = 1
+        self.mario.sitting_at_bottom_of_pole()
+        self.assertEqual(self.mario.image, self.mario.left_frames[10])
+
+    def test_sitting_at_bottom_of_pole_case_3a(self):
+        self.mario.current_time = 220
+        self.mario.flag_pole_timer = 1
+        self.mario.sitting_at_bottom_of_pole()
+        self.assertFalse(self.mario.in_transition_state)
+        self.assertEqual(self.mario.state, c.END_OF_LEVEL_FALL)
+
+    def test_sitting_at_bottom_of_pole_case_3b(self):
+        self.mario.current_time = 220
+        self.mario.rect.bottom = 486
+        self.mario.flag_pole_timer = 1
+        self.mario.sitting_at_bottom_of_pole()
+        self.assertFalse(self.mario.in_transition_state)
+        self.assertEqual(self.mario.state, c.WALKING_TO_CASTLE)
+
     def test_jumping_to_death(self):
         self.mario.death_timer = 0
         self.mario.current_time = 1000
@@ -679,6 +1180,105 @@ class TestMario(TestCase):
         self.assertEqual(self.mario.state, c.DEATH_JUMP)
         self.assertTrue(self.mario.in_transition_state)
 
+    def test_changing_to_big_1(self):
+        self.mario.current_time = 0
+        self.mario.transition_timer = 0
+        self.mario.changing_to_big()
+        self.assertEqual(self.mario.transition_timer, self.mario.current_time)
+
+    def test_changing_to_big_2(self):
+        self.mario.transition_timer = 1
+        fn = lambda x,y: x == 135 and y == 200
+        with patch.object(self.mario, 'timer_between_these_two_times', new = fn):
+            with patch.object(self.mario, 'set_mario_to_middle_image') as mock_set_mario_to_middle_image:
+                self.mario.changing_to_big()
+                mock_set_mario_to_middle_image.assert_called_once_with()
+
+    def test_changing_to_big_3(self):
+        self.mario.transition_timer = 1
+        fn = lambda x,y: x == 200 and y == 365
+        with patch.object(self.mario, 'timer_between_these_two_times', new = fn):
+            with patch.object(self.mario, 'set_mario_to_small_image') as mock_set_mario_to_small_image:
+                self.mario.changing_to_big()
+                mock_set_mario_to_small_image.assert_called_once_with()
+
+    def test_changing_to_big_4(self):
+        self.mario.transition_timer = 1
+        fn = lambda x,y: x == 365 and y == 430
+        with patch.object(self.mario, 'timer_between_these_two_times', new = fn):
+            with patch.object(self.mario, 'set_mario_to_middle_image') as mock_set_mario_to_middle_image:
+                self.mario.changing_to_big()
+                mock_set_mario_to_middle_image.assert_called_once_with()
+
+    def test_changing_to_big_5(self):
+        self.mario.transition_timer = 1
+        fn = lambda x,y: x == 430 and y == 495
+        with patch.object(self.mario, 'timer_between_these_two_times', new = fn):
+            with patch.object(self.mario, 'set_mario_to_small_image') as mock_set_mario_to_small_image:
+                self.mario.changing_to_big()
+                mock_set_mario_to_small_image.assert_called_once_with()
+
+    def test_changing_to_big_6(self):
+        self.mario.transition_timer = 1
+        fn = lambda x,y: x == 495 and y == 560
+        with patch.object(self.mario, 'timer_between_these_two_times', new = fn):
+            with patch.object(self.mario, 'set_mario_to_middle_image') as mock_set_mario_to_middle_image:
+                self.mario.changing_to_big()
+                mock_set_mario_to_middle_image.assert_called_once_with()
+
+    def test_changing_to_big_7(self):
+        self.mario.transition_timer = 1
+        fn = lambda x,y: x == 560 and y == 625
+        with patch.object(self.mario, 'timer_between_these_two_times', new = fn):
+            with patch.object(self.mario, 'set_mario_to_big_image') as mock_set_mario_to_big_image:
+                self.mario.changing_to_big()
+                mock_set_mario_to_big_image.assert_called_once_with()
+
+    def test_changing_to_big_8(self):
+        self.mario.transition_timer = 1
+        fn = lambda x,y: x == 625 and y == 690
+        with patch.object(self.mario, 'timer_between_these_two_times', new = fn):
+            with patch.object(self.mario, 'set_mario_to_small_image') as mock_set_mario_to_small_image:
+                self.mario.changing_to_big()
+                mock_set_mario_to_small_image.assert_called_once_with()
+
+    def test_changing_to_big_9(self):
+        self.mario.transition_timer = 1
+        fn = lambda x,y: x == 690 and y == 755
+        with patch.object(self.mario, 'timer_between_these_two_times', new = fn):
+            with patch.object(self.mario, 'set_mario_to_middle_image') as mock_set_mario_to_middle_image:
+                self.mario.changing_to_big()
+                mock_set_mario_to_middle_image.assert_called_once_with()
+
+    def test_changing_to_big_10(self):
+        self.mario.transition_timer = 1
+        fn = lambda x,y: x == 755 and y == 820
+        with patch.object(self.mario, 'timer_between_these_two_times', new = fn):
+            with patch.object(self.mario, 'set_mario_to_big_image') as mock_set_mario_to_big_image:
+                self.mario.changing_to_big()
+                mock_set_mario_to_big_image.assert_called_once_with()
+
+    def test_changing_to_big_11(self):
+        self.mario.transition_timer = 1
+        fn = lambda x,y: x == 820 and y == 885
+        with patch.object(self.mario, 'timer_between_these_two_times', new = fn):
+            with patch.object(self.mario, 'set_mario_to_small_image') as mock_set_mario_to_small_image:
+                self.mario.changing_to_big()
+                mock_set_mario_to_small_image.assert_called_once_with()
+
+    def test_changing_to_big_12(self):
+        self.mario.transition_timer = 1
+        fn = lambda x,y: x == 885 and y == 950
+        with patch.object(self.mario, 'timer_between_these_two_times', new = fn):
+            with patch.object(self.mario, 'set_mario_to_big_image') as mock_set_mario_to_big_image:
+                with patch.object(self.mario, 'become_big') as mock_become_big:
+                    self.mario.changing_to_big()
+                    mock_set_mario_to_big_image.assert_called_once_with()
+                    mock_become_big.assert_called_once_with()
+                    self.assertEqual(self.mario.state, c.WALK)
+                    self.assertEqual(self.mario.transition_timer, 0)
+                    self.assertFalse(self.mario.in_transition_state)
+
     def test_check_if_invincible(self):
         self.mario.current_time = 10000
         self.mario.invincible = True
@@ -688,6 +1288,29 @@ class TestMario(TestCase):
         self.mario.invincible_start_timer = self.mario.current_time - 13000
         self.mario.check_if_invincible()
         self.assertFalse(self.mario.invincible)
+
+    def test_check_if_invincible_first_if_in_outer_if(self):
+        self.mario.invincible = True
+        self.mario.current_time = 0
+        self.mario.invincible_start_timer = 0
+        with patch.object(self.mario, 'change_frame_list') as mock_change_frame_list:
+            self.mario.check_if_invincible()
+            self.assertFalse(self.mario.losing_invincibility)
+            mock_change_frame_list.assert_called_once_with(30)
+
+    def test_check_if_invincible_not_invisible_big(self):
+        self.mario.invincible = False
+        self.mario.big = True
+        self.mario.check_if_invincible()
+        self.assertEqual(self.mario.right_frames, self.mario.right_big_normal_frames)
+        self.assertEqual(self.mario.left_frames, self.mario.left_big_normal_frames)
+
+    def test_check_if_invincible_not_invisible_not_big(self):
+        self.mario.invincible = False
+        self.mario.big = False
+        self.mario.check_if_invincible()
+        self.assertEqual(self.mario.right_frames, self.mario.invincible_small_frames_list[0][0])
+        self.assertEqual(self.mario.left_frames, self.mario.invincible_small_frames_list[0][1])
 
     def test_check_if_crouching(self):
         self.mario.crouching = True
@@ -711,3 +1334,61 @@ class TestMario(TestCase):
         self.mario.check_if_fire.assert_called_once()
         self.mario.check_if_hurt_invincible.assert_called_once()
         self.mario.check_if_crouching.assert_called_once()
+
+    def test_set_state_to_bottom_of_pole_big(self):
+        self.mario.big = True
+        self.mario.rect.right = 100
+        self.mario.set_state_to_bottom_of_pole()
+        self.assertEqual(self.mario.image, self.mario.left_frames[9])
+        self.assertEqual(self.mario.rect.x, 90)
+        self.assertEqual(self.mario.flag_pole_timer, 0)
+        self.assertEqual(self.mario.state, c.BOTTOM_OF_POLE)
+
+    def test_walking_to_castle_both_ifs(self):
+        self.mario.current_time = 2
+        self.mario.x_vel = 0
+        self.mario.walking_timer = 0
+        self.mario.walking_to_castle()
+        self.assertEqual(self.mario.max_x_vel, 5)
+        self.assertEqual(self.mario.x_accel, c.WALK_ACCEL)
+        self.assertEqual(self.mario.x_vel, self.mario.x_accel)
+
+    def test_walking_to_castle_if_elif_if(self):
+        self.mario.current_time = 100
+        self.mario.walking_timer = 1
+        self.mario.frame_index = 2
+        ret_neg_1000 = lambda : -1000
+        with patch.object(self.mario, 'calculate_animation_speed', new=ret_neg_1000):
+            self.mario.walking_to_castle()
+            self.assertEqual(self.mario.max_x_vel, 5)
+            self.assertEqual(self.mario.x_accel, c.WALK_ACCEL)
+            self.assertEqual(self.mario.frame_index, 3)
+            self.assertEqual(self.mario.walking_timer, self.mario.current_time)
+
+    def test_walking_to_castle_if_elif_else(self):
+        self.mario.current_time = 100
+        self.mario.walking_timer = 1
+        self.mario.frame_index = 3
+        ret_neg_1000 = lambda : -1000
+        with patch.object(self.mario, 'calculate_animation_speed', new=ret_neg_1000):
+            self.mario.walking_to_castle()
+            self.assertEqual(self.mario.max_x_vel, 5)
+            self.assertEqual(self.mario.x_accel, c.WALK_ACCEL)
+            self.assertEqual(self.mario.frame_index, 1)
+            self.assertEqual(self.mario.walking_timer, self.mario.current_time)
+
+    def test_falling_at_end_of_level(self):
+        self.mario.y_vel = 0
+        self.mario.falling_at_end_of_level()
+        self.assertEqual(self.mario.y_vel, c.GRAVITY)
+
+    def test_change_frame_list_first_else_and_big(self):
+        self.mario.big = True
+        self.mario.current_time = 100
+        self.mario.invincible_animation_timer = 0
+        self.mario.invincible_index = 100
+        self.mario.change_frame_list(1)
+        self.assertEqual(self.mario.invincible_index, 0)
+        self.assertEqual(self.mario.invincible_animation_timer, self.mario.current_time)
+        self.assertEqual(self.mario.right_frames, self.mario.invincible_big_frames_list[self.mario.invincible_index][0])
+        self.assertEqual(self.mario.left_frames, self.mario.invincible_big_frames_list[self.mario.invincible_index][1])
