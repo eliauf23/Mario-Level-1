@@ -257,12 +257,12 @@ class TestOverheadInfo(TestCase):
         score_images_len = len(self.overhead_info.score_images)
         letter_len_main_menu = 0
         for label in self.overhead_info.main_menu_labels:
-            for letter in label:
+            for _ in label:
                 letter_len_main_menu += 1
         coin_count_images_len = len(self.overhead_info.coin_count_images)
         letter_len_label_list = 0
         for label in self.overhead_info.label_list:
-            for letter in label:
+            for _ in label:
                 letter_len_label_list += 1
         total_expected_blit = score_images_len + letter_len_main_menu + coin_count_images_len + letter_len_label_list + 1
         # ^the +1 is because of line 350 in info.py
@@ -275,13 +275,13 @@ class TestOverheadInfo(TestCase):
         score_images_len = len(self.overhead_info.score_images)
         center_labels_total_len = 0
         for word in self.overhead_info.center_labels:
-            for letter in word:
+            for _ in word:
                 center_labels_total_len += 1
         life_total_label_len = len(self.overhead_info.life_total_label)
         coin_count_images_len = len(self.overhead_info.coin_count_images)
         label_list_total_len = 0
         for label in self.overhead_info.label_list:
-            for letter in label:
+            for _ in label:
                 label_list_total_len += 1
         total_expected_blit = score_images_len + center_labels_total_len + life_total_label_len + 2 + coin_count_images_len + label_list_total_len + 1
         with patch.object(surface, "blit") as mock_blit:
@@ -295,7 +295,7 @@ class TestOverheadInfo(TestCase):
         coin_count_images_len = len(self.overhead_info.coin_count_images)
         label_list_total_len = 0
         for label in self.overhead_info.label_list:
-            for letter in label:
+            for _ in label:
                 label_list_total_len += 1
         total_expected_blit = score_images_len + count_down_images_len + coin_count_images_len + label_list_total_len + 1
         with patch.object(surface, "blit") as mock_blit:
@@ -307,12 +307,12 @@ class TestOverheadInfo(TestCase):
         score_images_len = len(self.overhead_info.score_images)
         game_over_labels_total_count = 0
         for word in self.overhead_info.game_over_label:
-            for letter in word:
+            for _ in word:
                 game_over_labels_total_count += 1
         coin_count_images_len = len(self.overhead_info.coin_count_images)
         label_list_total_len = 0
         for label in self.overhead_info.label_list:
-            for letter in label:
+            for _ in label:
                 label_list_total_len += 1
         total_expected_blit = score_images_len + game_over_labels_total_count + coin_count_images_len + label_list_total_len + 1
         with patch.object(surface, "blit") as mock_blit:
@@ -324,12 +324,12 @@ class TestOverheadInfo(TestCase):
         score_images_len = len(self.overhead_info.score_images)
         time_out_labels_total_count = 0
         for word in self.overhead_info.time_out_label:
-            for letter in word:
+            for _ in word:
                 time_out_labels_total_count += 1
         coin_count_images_len = len(self.overhead_info.coin_count_images)
         label_list_total_len = 0
         for label in self.overhead_info.label_list:
-            for letter in label:
+            for _ in label:
                 label_list_total_len += 1
 
         total_expected_blit = score_images_len + time_out_labels_total_count + coin_count_images_len + label_list_total_len + 1

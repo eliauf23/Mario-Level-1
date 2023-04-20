@@ -1,0 +1,39 @@
+digraph "packages_SuperMarioLevel1" {
+rankdir=BT
+charset="utf-8"
+"SuperMarioLevel1" [color="aliceblue", label=<SuperMarioLevel1>, shape="box", style="filled"];
+"SuperMarioLevel1.data" [color="aliceblue", label=<SuperMarioLevel1.data>, shape="box", style="filled"];
+"SuperMarioLevel1.data.components" [color="aliceblue", label=<SuperMarioLevel1.data.components>, shape="box", style="filled"];
+"SuperMarioLevel1.data.components.bricks" [color="aliceblue", label=<SuperMarioLevel1.data.components.bricks>, shape="box", style="filled"];
+"SuperMarioLevel1.data.components.castle_flag" [color="aliceblue", label=<SuperMarioLevel1.data.components.castle_flag>, shape="box", style="filled"];
+"SuperMarioLevel1.data.components.checkpoint" [color="aliceblue", label=<SuperMarioLevel1.data.components.checkpoint>, shape="box", style="filled"];
+"SuperMarioLevel1.data.components.coin" [color="aliceblue", label=<SuperMarioLevel1.data.components.coin>, shape="box", style="filled"];
+"SuperMarioLevel1.data.components.coin_box" [color="aliceblue", label=<SuperMarioLevel1.data.components.coin_box>, shape="box", style="filled"];
+"SuperMarioLevel1.data.components.collider" [color="aliceblue", label=<SuperMarioLevel1.data.components.collider>, shape="box", style="filled"];
+"SuperMarioLevel1.data.components.enemies" [color="aliceblue", label=<SuperMarioLevel1.data.components.enemies>, shape="box", style="filled"];
+"SuperMarioLevel1.data.components.flagpole" [color="aliceblue", label=<SuperMarioLevel1.data.components.flagpole>, shape="box", style="filled"];
+"SuperMarioLevel1.data.components.flashing_coin" [color="aliceblue", label=<SuperMarioLevel1.data.components.flashing_coin>, shape="box", style="filled"];
+"SuperMarioLevel1.data.components.info" [color="aliceblue", label=<SuperMarioLevel1.data.components.info>, shape="box", style="filled"];
+"SuperMarioLevel1.data.components.mario" [color="aliceblue", label=<SuperMarioLevel1.data.components.mario>, shape="box", style="filled"];
+"SuperMarioLevel1.data.components.powerups" [color="aliceblue", label=<SuperMarioLevel1.data.components.powerups>, shape="box", style="filled"];
+"SuperMarioLevel1.data.components.score" [color="aliceblue", label=<SuperMarioLevel1.data.components.score>, shape="box", style="filled"];
+"SuperMarioLevel1.data.constants" [color="aliceblue", label=<SuperMarioLevel1.data.constants>, shape="box", style="filled"];
+"SuperMarioLevel1.data.game_sound" [color="aliceblue", label=<SuperMarioLevel1.data.game_sound>, shape="box", style="filled"];
+"SuperMarioLevel1.data.main" [color="aliceblue", label=<SuperMarioLevel1.data.main>, shape="box", style="filled"];
+"SuperMarioLevel1.data.setup" [color="aliceblue", label=<SuperMarioLevel1.data.setup>, shape="box", style="filled"];
+"SuperMarioLevel1.data.states" [color="aliceblue", label=<SuperMarioLevel1.data.states>, shape="box", style="filled"];
+"SuperMarioLevel1.data.states.level1" [color="aliceblue", label=<SuperMarioLevel1.data.states.level1>, shape="box", style="filled"];
+"SuperMarioLevel1.data.states.load_screen" [color="aliceblue", label=<SuperMarioLevel1.data.states.load_screen>, shape="box", style="filled"];
+"SuperMarioLevel1.data.states.main_menu" [color="aliceblue", label=<SuperMarioLevel1.data.states.main_menu>, shape="box", style="filled"];
+"SuperMarioLevel1.data.tools" [color="aliceblue", label=<SuperMarioLevel1.data.tools>, shape="box", style="filled"];
+"SuperMarioLevel1.mario_level_1" [color="aliceblue", label=<SuperMarioLevel1.mario_level_1>, shape="box", style="filled"];
+"SuperMarioLevel1.setup" [color="aliceblue", label=<SuperMarioLevel1.setup>, shape="box", style="filled"];
+"SuperMarioLevel1.data.main" -> "SuperMarioLevel1.data.states" [arrowhead="open", arrowtail="none"];
+"SuperMarioLevel1.data.main" -> "SuperMarioLevel1.data.states.level1" [arrowhead="open", arrowtail="none"];
+"SuperMarioLevel1.data.main" -> "SuperMarioLevel1.data.states.load_screen" [arrowhead="open", arrowtail="none"];
+"SuperMarioLevel1.data.main" -> "SuperMarioLevel1.data.states.main_menu" [arrowhead="open", arrowtail="none"];
+"SuperMarioLevel1.data.setup" -> "SuperMarioLevel1.data" [arrowhead="open", arrowtail="none"];
+"SuperMarioLevel1.data.setup" -> "SuperMarioLevel1.data.constants" [arrowhead="open", arrowtail="none"];
+"SuperMarioLevel1.data.setup" -> "SuperMarioLevel1.data.tools" [arrowhead="open", arrowtail="none"];
+"SuperMarioLevel1.mario_level_1" -> "SuperMarioLevel1.data.main" [arrowhead="open", arrowtail="none"];
+}

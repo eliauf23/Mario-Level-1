@@ -76,7 +76,12 @@ class TestCoin(TestCase):
         self.assertFalse((pg.surfarray.array3d(img1) == pg.surfarray.array3d(img2)).all())
 
     def test_setup_frames_all_different(self):
-        unique_frames = len(set(tuple(pg.surfarray.array3d(frame).flatten()) for frame in self.coin.frames))
+        unique_frames = len(
+            {
+                tuple(pg.surfarray.array3d(frame).flatten())
+                for frame in self.coin.frames
+            }
+        )
         self.assertEqual(unique_frames, len(self.coin.frames))
 
     def test_update_different_game_info_viewport(self):

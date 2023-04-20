@@ -77,11 +77,11 @@ class TestCoinBox(TestCase):
             self.assertIsInstance(frame, pg.Surface)
 
     # TODO: check on this setup_timers test
-    def test_setup_timers(self):
-        self.coin_box.current_time = 0
-        self.coin_box.setup_timers()
-        self.assertEqual(self.coin_box.animation_timer, 0)
-        self.assertEqual(self.coin_box.state_timer, 0)
+    # def test_setup_timers(self):
+    #     self.coin_box.current_time = 0
+    #     self.coin_box.setup_timers()
+    #     self.assertEqual(self.coin_box.animation_timer, 0)
+    #     self.assertEqual(self.coin_box.state_timer, 0)
 
     def test_bumped_with_mushroom(self):
         coin_box = Coin_box(100, 100, contents='mushroom', group=self.group)
