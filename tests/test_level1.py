@@ -6,6 +6,7 @@ from SuperMarioLevel1.data.states.level1 import Level1
 import SuperMarioLevel1.data.setup as setup
 import SuperMarioLevel1.data.tools as tools
 from data.components import score, bricks
+from data.components.powerups import LifeMushroom, Mushroom, Star, FireBall
 
 
 class TestLevel1(TestCase):
@@ -741,3 +742,286 @@ class TestLevel1(TestCase):
         self.assertEqual(enemy_collider.x_vel, -2)
         assert enemy_collider in self.level1.enemy_group
         assert self.level1.enemy_group in self.level1.mario_and_enemy_group
+
+    def test_check_enemy_y_collisions_case_collider_1(self):
+        pg.sprite.spritecollideany = Mock()
+        collider = self.level1.ground_step_pipe_group.sprites()[0]
+        enemy = self.level1.enemy_group_list[0].sprites()[0]
+        enemy.rect.bottom = 10000
+        pg.sprite.spritecollideany.side_effect = [collider, 0, 0, 0, 0, 0]
+        self.level1.check_enemy_y_collisions(enemy)
+        self.assertEqual(enemy.y_vel, 7)
+        self.assertEqual(enemy.rect.top, collider.rect.bottom)
+        self.assertEqual(enemy.state, c.FALL)
+
+    def test_check_enemy_y_collisions_case_collider_2(self):
+        pg.sprite.spritecollideany = Mock()
+        collider = self.level1.ground_step_pipe_group.sprites()[0]
+        enemy = self.level1.enemy_group_list[0].sprites()[0]
+        pg.sprite.spritecollideany.side_effect = [collider, 0, 0, 0, 0, 0]
+        self.level1.check_enemy_y_collisions(enemy)
+        self.assertEqual(enemy.y_vel, 0)
+        self.assertEqual(enemy.rect.bottom, collider.rect.top)
+        self.assertEqual(enemy.state, c.WALK)
+
+    # testing if statement inside 'if brick.state == c.BUMPED' in check_enemy_y_collisions
+    def test_check_enemy_y_collisions_case_brick_bumped_if(self):
+        brick = self.level1.brick_group.sprites()[0]
+        brick.state = c.BUMPED
+        pg.sprite.spritecollideany = Mock()
+        enemy = self.level1.enemy_group_list[0].sprites()[0]
+        pg.sprite.spritecollideany.side_effect = [0, brick, 0, 0, 0, 0]
+        self.level1.mario.rect.centerx = 10000
+        with patch.object(enemy, 'start_death_jump') as mock_start_death_jump:
+            self.level1.check_enemy_y_collisions(enemy)
+            mock_start_death_jump.assert_called_once_with('right')
+            assert enemy in self.level1.sprites_about_to_die_group
+
+    # testing else statement inside 'if brick.state == c.BUMPED' in check_enemy_y_collisions
+    def test_check_enemy_y_collisions_case_brick_bumped_else(self):
+        brick = self.level1.brick_group.sprites()[0]
+        brick.state = c.BUMPED
+        pg.sprite.spritecollideany = Mock()
+        enemy = self.level1.enemy_group_list[0].sprites()[0]
+        pg.sprite.spritecollideany.side_effect = [0, brick, 0, 0, 0, 0]
+        # self.level1.mario.rect.centerx = 10000
+        with patch.object(enemy, 'start_death_jump') as mock_start_death_jump:
+            self.level1.check_enemy_y_collisions(enemy)
+            mock_start_death_jump.assert_called_once_with('left')
+            assert enemy in self.level1.sprites_about_to_die_group
+
+    # testing elif enemy.rect.x > brick.rect.x in check_enemy_y_collisions
+    def test_check_enemy_y_collisions_case_brick_elif(self):
+        brick = self.level1.brick_group.sprites()[0]
+        pg.sprite.spritecollideany = Mock()
+        enemy = self.level1.enemy_group_list[0].sprites()[0]
+        enemy.rect.x = 10000
+        pg.sprite.spritecollideany.side_effect = [0, brick, 0, 0, 0, 0]
+        self.level1.check_enemy_y_collisions(enemy)
+        self.assertEqual(enemy.y_vel, 7)
+        self.assertEqual(enemy.rect.top, brick.rect.bottom)
+        self.assertEqual(enemy.state, c.FALL)
+
+    # testing else after elif enemy.rect.x > brick.rect.x in check_enemy_y_collisions
+    def test_check_enemy_y_collisions_case_brick_else_after_elif(self):
+        brick = self.level1.brick_group.sprites()[0]
+        pg.sprite.spritecollideany = Mock()
+        enemy = self.level1.enemy_group_list[0].sprites()[0]
+        pg.sprite.spritecollideany.side_effect = [0, brick, 0, 0, 0, 0]
+        self.level1.check_enemy_y_collisions(enemy)
+        self.assertEqual(enemy.y_vel, 0)
+        self.assertEqual(enemy.rect.bottom, brick.rect.top)
+        self.assertEqual(enemy.state, c.WALK)
+
+    # testing if statement when coinbox is bumped in check_enemy_y_collisions
+    def test_check_enemy_y_collisions_case_coin_box_bumped_if(self):
+        coin_box = self.level1.coin_box_group.sprites()[0]
+        pg.sprite.spritecollideany = Mock()
+        enemy = self.level1.enemy_group_list[0].sprites()[0]
+        pg.sprite.spritecollideany.side_effect = [0, 0, coin_box, 0, 0, 0]
+        coin_box.state = c.BUMPED
+        self.level1.mario.rect.centerx = 1000
+        # self.level1.check_enemy_y_collisions(enemy)
+        with patch.object(enemy, 'start_death_jump') as mock_start_death_jump:
+            self.level1.check_enemy_y_collisions(enemy)
+            mock_start_death_jump.assert_called_once_with('right')
+            assert enemy in self.level1.sprites_about_to_die_group
+
+    # testing else statement when coinbox is bumped in check_enemy_y_collisions
+    def test_check_enemy_y_collisions_case_coin_box_bumped_else(self):
+        coin_box = self.level1.coin_box_group.sprites()[0]
+        pg.sprite.spritecollideany = Mock()
+        enemy = self.level1.enemy_group_list[0].sprites()[0]
+        pg.sprite.spritecollideany.side_effect = [0, 0, coin_box, 0, 0, 0]
+        coin_box.state = c.BUMPED
+        # self.level1.mario.rect.centerx = 1000
+        # self.level1.check_enemy_y_collisions(enemy)
+        with patch.object(enemy, 'start_death_jump') as mock_start_death_jump:
+            self.level1.check_enemy_y_collisions(enemy)
+            mock_start_death_jump.assert_called_once_with('left')
+            assert enemy in self.level1.sprites_about_to_die_group
+
+    # testing elif for coinbox when it's not bumped in check_enemy_y_collisions
+    def test_check_enemy_y_collisions_case_coin_box_not_bumped_elif(self):
+        coin_box = self.level1.coin_box_group.sprites()[0]
+        pg.sprite.spritecollideany = Mock()
+        enemy = self.level1.enemy_group_list[0].sprites()[0]
+        pg.sprite.spritecollideany.side_effect = [0, 0, coin_box, 0, 0, 0]
+        enemy.rect.x = 700
+        self.level1.check_enemy_y_collisions(enemy)
+        self.assertEqual(enemy.y_vel, 7)
+        self.assertEqual(enemy.rect.top, coin_box.rect.bottom)
+        self.assertEqual(enemy.state, c.FALL)
+
+    # testing elif for coinbox when it's not bumped in check_enemy_y_collisions
+    def test_check_enemy_y_collisions_case_coin_box_not_bumped_else(self):
+        coin_box = self.level1.coin_box_group.sprites()[0]
+        pg.sprite.spritecollideany = Mock()
+        enemy = self.level1.enemy_group_list[0].sprites()[0]
+        pg.sprite.spritecollideany.side_effect = [0, 0, coin_box, 0, 0, 0]
+        self.level1.check_enemy_y_collisions(enemy)
+        self.assertEqual(enemy.y_vel, 0)
+        self.assertEqual(enemy.rect.bottom, coin_box.rect.top)
+        self.assertEqual(enemy.state, c.WALK)
+
+    # testing final else statement (with both ifs true) in check_enemy_y_collisions
+    def test_check_enemy_y_collisions_case_last_else(self):
+        pg.sprite.spritecollideany = Mock()
+        enemy = self.level1.enemy_group_list[0].sprites()[0]
+        pg.sprite.spritecollideany.side_effect = [None, None, None, None, None, None]
+        self.level1.check_enemy_y_collisions(enemy)
+        self.assertEqual(enemy.state, c.FALL)
+
+    def test_adjust_shell_position(self):
+        shell = self.level1.enemy_group_list[0].sprites()[0]
+        self.level1.shell_group.add(shell)
+        with patch.object(self.level1, 'delete_if_off_screen') as mock_delete_if_off_screen:
+            self.level1.adjust_shell_position()
+            mock_delete_if_off_screen.assert_called_once_with(shell)
+
+    def test_check_shell_x_collisions_all_ifs(self):
+        pg.sprite.spritecollideany = Mock()
+        enemy = self.level1.enemy_group_list[0].sprites()[0]
+        collider = self.level1.ground_step_pipe_group.sprites()[0]
+        pg.sprite.spritecollideany.side_effect = [collider, enemy, None, None, None, None]
+        shell = self.level1.enemy_group_list[0].sprites()[0]
+        shell.x_vel = 1
+        self.level1.check_shell_x_collisions(shell)
+        assert enemy in self.level1.sprites_about_to_die_group
+        self.assertEqual(shell.direction, c.LEFT)
+        self.assertEqual(shell.rect.right, collider.rect.left)
+
+    def test_check_shell_x_collisions_else(self):
+        pg.sprite.spritecollideany = Mock()
+        enemy = self.level1.enemy_group_list[0].sprites()[0]
+        collider = self.level1.ground_step_pipe_group.sprites()[0]
+        pg.sprite.spritecollideany.side_effect = [collider, enemy, None, None, None, None]
+        shell = self.level1.enemy_group_list[0].sprites()[0]
+        self.level1.check_shell_x_collisions(shell)
+        assert enemy in self.level1.sprites_about_to_die_group
+        self.assertEqual(shell.direction, c.RIGHT)
+        self.assertEqual(shell.rect.left, collider.rect.right)
+
+    def test_check_shell_y_collisions_if(self):
+        pg.sprite.spritecollideany = Mock()
+        collider = self.level1.ground_step_pipe_group.sprites()[0]
+        pg.sprite.spritecollideany.side_effect = [collider, None, None, None, None, None]
+        shell = self.level1.enemy_group_list[0].sprites()[0]
+        self.level1.check_shell_y_collisions(shell)
+        self.assertEqual(shell.state, c.SHELL_SLIDE)
+
+    def test_check_shell_y_collisions_else(self):
+        pg.sprite.spritecollideany = Mock()
+        pg.sprite.spritecollideany.side_effect = [None, None, None, None, None, None]
+        shell = self.level1.enemy_group_list[0].sprites()[0]
+        self.level1.check_shell_y_collisions(shell)
+        self.assertEqual(shell.state, c.FALL)
+
+    def test_adjust_powerup_position(self):
+        mushroom = Mushroom(0,0)
+        star = Star(0,0)
+        fireball = FireBall(0,0, False)
+        life_mushroom = LifeMushroom(0,0)
+        self.level1.powerup_group.add(mushroom, star, fireball, life_mushroom)
+        with patch.object(self.level1, 'adjust_mushroom_position') as mock_adjust_mushroom_position:
+            with patch.object(self.level1, 'adjust_star_position') as mock_adjust_star_position:
+                with patch.object(self.level1, 'adjust_fireball_position') as mock_adjust_fireball_position:
+                    self.level1.adjust_powerup_position()
+                    mock_adjust_mushroom_position.assert_called()
+                    mock_adjust_star_position.assert_called_once_with(star)
+                    mock_adjust_fireball_position.assert_called_once_with(fireball)
+
+    def test_adjust_mushroom_position(self):
+        mushroom = Mushroom(0, 0)
+        mushroom.state = c.LEFT
+        with patch.object(self.level1, 'check_mushroom_x_collisions') as mock_check_mushroom_x_collisions:
+            with patch.object(self.level1, 'check_mushroom_y_collisions') as mock_check_mushroom_y_collisions:
+                with patch.object(self.level1, 'delete_if_off_screen') as mock_delete_if_off_screen:
+                    self.level1.adjust_mushroom_position(mushroom)
+                    mock_check_mushroom_x_collisions.assert_called_once_with(mushroom)
+                    mock_check_mushroom_y_collisions.assert_called_once_with(mushroom)
+                    mock_delete_if_off_screen.assert_called_once_with(mushroom)
+
+    def test_check_mushroom_x_collisions_case_1(self):
+        mushroom = Mushroom(0, 0)
+        collider = self.level1.ground_step_pipe_group.sprites()[0]
+        pg.sprite.spritecollideany = Mock()
+        pg.sprite.spritecollideany.side_effect = [collider, None, None, None, None, None]
+        with patch.object(self.level1, 'adjust_mushroom_for_collision_x') as mock_adjust_mushroom_for_collision_x:
+            self.level1.check_mushroom_x_collisions(mushroom)
+            mock_adjust_mushroom_for_collision_x.assert_called_once_with(mushroom, collider)
+
+    def test_check_mushroom_x_collisions_case_2(self):
+        mushroom = Mushroom(0, 0)
+        brick = self.level1.brick_group.sprites()[0]
+        pg.sprite.spritecollideany = Mock()
+        pg.sprite.spritecollideany.side_effect = [None, brick, None, None, None, None]
+        with patch.object(self.level1, 'adjust_mushroom_for_collision_x') as mock_adjust_mushroom_for_collision_x:
+            self.level1.check_mushroom_x_collisions(mushroom)
+            mock_adjust_mushroom_for_collision_x.assert_called_once_with(mushroom, brick)
+
+    def test_check_mushroom_x_collisions_case_3(self):
+        mushroom = Mushroom(0, 0)
+        coin_box = self.level1.coin_box_group.sprites()[0]
+        pg.sprite.spritecollideany = Mock()
+        pg.sprite.spritecollideany.side_effect = [None, None, coin_box, None, None, None]
+        with patch.object(self.level1, 'adjust_mushroom_for_collision_x') as mock_adjust_mushroom_for_collision_x:
+            self.level1.check_mushroom_x_collisions(mushroom)
+            mock_adjust_mushroom_for_collision_x.assert_called_once_with(mushroom, coin_box)
+    def test_check_mushroom_y_collisions_case_1(self):
+        mushroom = Mushroom(0, 0)
+        collider = self.level1.ground_step_pipe_group.sprites()[0]
+        pg.sprite.spritecollideany = Mock()
+        pg.sprite.spritecollideany.side_effect = [collider, None, None, None, None, None]
+        with patch.object(self.level1, 'adjust_mushroom_for_collision_y') as mock_adjust_mushroom_for_collision_y:
+            self.level1.check_mushroom_y_collisions(mushroom)
+            mock_adjust_mushroom_for_collision_y.assert_called_once_with(mushroom, collider)
+
+    def test_check_mushroom_y_collisions_case_2(self):
+        mushroom = Mushroom(0, 0)
+        brick = self.level1.brick_group.sprites()[0]
+        pg.sprite.spritecollideany = Mock()
+        pg.sprite.spritecollideany.side_effect = [None, brick, None, None, None, None]
+        with patch.object(self.level1, 'adjust_mushroom_for_collision_y') as mock_adjust_mushroom_for_collision_y:
+            self.level1.check_mushroom_y_collisions(mushroom)
+            mock_adjust_mushroom_for_collision_y.assert_called_once_with(mushroom, brick)
+
+    def test_check_mushroom_y_collisions_case_3(self):
+        mushroom = Mushroom(0, 0)
+        coin_box = self.level1.coin_box_group.sprites()[0]
+        pg.sprite.spritecollideany = Mock()
+        pg.sprite.spritecollideany.side_effect = [None, None, coin_box, None, None, None]
+        with patch.object(self.level1, 'adjust_mushroom_for_collision_y') as mock_adjust_mushroom_for_collision_y:
+            self.level1.check_mushroom_y_collisions(mushroom)
+            mock_adjust_mushroom_for_collision_y.assert_called_once_with(mushroom, coin_box)
+
+    def test_check_mushroom_y_collisions_case_4(self):
+        mushroom = Mushroom(0, 0)
+        pg.sprite.spritecollideany = Mock()
+        pg.sprite.spritecollideany.side_effect = [None, None, None, None, None, None]
+        with patch.object(self.level1, 'check_if_falling') as mock_check_if_falling:
+            self.level1.check_mushroom_y_collisions(mushroom)
+            self.assertEqual(mock_check_if_falling.call_count, 3)
+
+    def test_adjust_mushroom_for_collision_x_case_1(self):
+        item = Mushroom(0, 0)
+        collider = self.level1.coin_box_group.sprites()[0]
+        self.level1.adjust_mushroom_for_collision_x(item, collider)
+        self.assertEqual(item.rect.right, collider.rect.x)
+        self.assertEqual(item.direction, c.LEFT)
+
+    def test_adjust_mushroom_for_collision_x_case_2(self):
+        item = Mushroom(0, 0)
+        item.rect.x = 10000
+        collider = self.level1.coin_box_group.sprites()[0]
+        self.level1.adjust_mushroom_for_collision_x(item, collider)
+        self.assertEqual(item.rect.x, collider.rect.right)
+        self.assertEqual(item.direction, c.RIGHT)
+
+    def test_adjust_mushroom_for_collision_y(self):
+        item = Mushroom(0, 0)
+        collider = self.level1.coin_box_group.sprites()[0]
+        self.level1.adjust_mushroom_for_collision_y(item, collider)
+        self.assertEqual(item.rect.bottom, collider.rect.y)
+        self.assertEqual(item.state, c.SLIDE)
+        self.assertEqual(item.y_vel, 0)
