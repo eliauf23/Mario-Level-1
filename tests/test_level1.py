@@ -7,6 +7,7 @@ import SuperMarioLevel1.data.setup as setup
 import SuperMarioLevel1.data.tools as tools
 from data.components import score, bricks
 from data.components.powerups import LifeMushroom, Mushroom, Star, FireBall
+from data.components.score import Score
 
 
 class TestLevel1(TestCase):
@@ -918,10 +919,10 @@ class TestLevel1(TestCase):
         self.assertEqual(shell.state, c.FALL)
 
     def test_adjust_powerup_position(self):
-        mushroom = Mushroom(0,0)
-        star = Star(0,0)
-        fireball = FireBall(0,0, False)
-        life_mushroom = LifeMushroom(0,0)
+        mushroom = Mushroom(0, 0)
+        star = Star(0, 0)
+        fireball = FireBall(0, 0, False)
+        life_mushroom = LifeMushroom(0, 0)
         self.level1.powerup_group.add(mushroom, star, fireball, life_mushroom)
         with patch.object(self.level1, 'adjust_mushroom_position') as mock_adjust_mushroom_position:
             with patch.object(self.level1, 'adjust_star_position') as mock_adjust_star_position:
@@ -968,6 +969,7 @@ class TestLevel1(TestCase):
         with patch.object(self.level1, 'adjust_mushroom_for_collision_x') as mock_adjust_mushroom_for_collision_x:
             self.level1.check_mushroom_x_collisions(mushroom)
             mock_adjust_mushroom_for_collision_x.assert_called_once_with(mushroom, coin_box)
+
     def test_check_mushroom_y_collisions_case_1(self):
         mushroom = Mushroom(0, 0)
         collider = self.level1.ground_step_pipe_group.sprites()[0]
@@ -1025,3 +1027,196 @@ class TestLevel1(TestCase):
         self.assertEqual(item.rect.bottom, collider.rect.y)
         self.assertEqual(item.state, c.SLIDE)
         self.assertEqual(item.y_vel, 0)
+
+    def test_adjust_star_position(self):
+        star = Star(0, 0)
+        old_x = star.rect.x
+        star.state = c.BOUNCE
+        with patch.object(self.level1, 'delete_if_off_screen') as mock_delete_if_off_screen:
+            self.level1.adjust_star_position(star)
+            self.assertEqual(old_x + star.x_vel, star.rect.x)
+            mock_delete_if_off_screen.assert_called_once_with(star)
+
+    def test_check_star_y_collisions_case_1(self):
+        star = Star(0, 0)
+        collider = self.level1.ground_step_pipe_group.sprites()[0]
+        pg.sprite.spritecollideany = Mock()
+        pg.sprite.spritecollideany.side_effect = [collider, None, None, None, None, None]
+        with patch.object(self.level1, 'adjust_star_for_collision_y') as mock_adjust_star_for_collision_y:
+            self.level1.check_star_y_collisions(star)
+            mock_adjust_star_for_collision_y.assert_called_once_with(star, collider)
+
+    def test_check_star_y_collisions_case_2(self):
+        star = Star(0, 0)
+        brick = self.level1.brick_group.sprites()[0]
+        pg.sprite.spritecollideany = Mock()
+        pg.sprite.spritecollideany.side_effect = [None, brick, None, None, None, None]
+        with patch.object(self.level1, 'adjust_star_for_collision_y') as mock_adjust_star_for_collision_y:
+            self.level1.check_star_y_collisions(star)
+            mock_adjust_star_for_collision_y.assert_called_once_with(star, brick)
+
+    def test_check_star_y_collisions_case_3(self):
+        star = Star(0, 0)
+        coin_box = self.level1.coin_box_group.sprites()[0]
+        pg.sprite.spritecollideany = Mock()
+        pg.sprite.spritecollideany.side_effect = [None, None, coin_box, None, None, None]
+        with patch.object(self.level1, 'adjust_star_for_collision_y') as mock_adjust_star_for_collision_y:
+            self.level1.check_star_y_collisions(star)
+            mock_adjust_star_for_collision_y.assert_called_once_with(star, coin_box)
+
+    def test_adjust_star_for_collision_y_case_1(self):
+        star = Star(0, 0)
+        star.rect.y = 10000
+        collider = self.level1.coin_box_group.sprites()[0]
+        self.level1.adjust_star_for_collision_y(star, collider)
+        self.assertEqual(star.rect.y, collider.rect.bottom)
+        self.assertEqual(star.y_vel, 0)
+
+    def test_adjust_star_for_collision_y_case_2(self):
+        star = Star(0, 0)
+        collider = self.level1.coin_box_group.sprites()[0]
+        self.level1.adjust_star_for_collision_y(star, collider)
+        self.assertEqual(star.rect.bottom, collider.rect.top)
+
+    def test_adjust_fireball_position_case_1(self):
+        fireball = FireBall(0, 0, True)
+        fireball.state = c.FLYING
+        old_x = fireball.rect.x
+        with patch.object(self.level1, 'delete_if_off_screen') as mock_delete_if_off_screen:
+            self.level1.adjust_fireball_position(fireball)
+            mock_delete_if_off_screen.assert_called_once_with(fireball)
+            self.assertEqual(old_x + fireball.x_vel, fireball.rect.x)
+
+    def test_adjust_fireball_position_case_2(self):
+        fireball = FireBall(0, 0, True)
+        fireball.state = c.BOUNCING
+        old_y_vel = fireball.y_vel
+        with patch.object(self.level1, 'delete_if_off_screen') as mock_delete_if_off_screen:
+            self.level1.adjust_fireball_position(fireball)
+            mock_delete_if_off_screen.assert_called_once_with(fireball)
+            self.assertEqual(old_y_vel + fireball.gravity, fireball.y_vel)
+
+    def test_bounce_fireball_case_1(self):
+        fireball = FireBall(0, 0, True)
+        self.level1.powerup_group.add(fireball)
+        fireball.direction = c.RIGHT
+        self.level1.bounce_fireball(fireball)
+        self.assertEqual(fireball.x_vel, 15)
+        self.assertEqual(fireball.state, c.BOUNCING)
+
+    def test_bounce_fireball_case_2(self):
+        fireball = FireBall(0, 0, True)
+        self.level1.powerup_group.add(fireball)
+        fireball.direction = c.LEFT
+        self.level1.bounce_fireball(fireball)
+        self.assertEqual(fireball.x_vel, -15)
+        self.assertEqual(fireball.state, c.BOUNCING)
+
+    def test_check_fireball_x_collisions(self):
+        fireball = FireBall(0, 0, True)
+        collider = self.level1.ground_step_pipe_group.sprites()[0]
+        pg.sprite.spritecollideany = Mock()
+        pg.sprite.spritecollideany.side_effect = [collider, None, None, None, None, None]
+        with patch.object(fireball, 'explode_transition') as mock_explode_transition:
+            self.level1.check_fireball_x_collisions(fireball)
+            mock_explode_transition.assert_called_once_with()
+            assert fireball in self.level1.sprites_about_to_die_group
+
+    def test_check_fireball_y_collisions_case_1(self):
+        fireball = FireBall(0, 0, True)
+        collider = self.level1.ground_step_pipe_group.sprites()[0]
+        pg.sprite.spritecollideany = Mock()
+        pg.sprite.spritecollideany.side_effect = [collider, None, None, None, None, None]
+        self.level1.powerup_group.add(fireball)
+        self.level1.check_fireball_y_collisions(fireball)
+        self.assertEqual(fireball.rect.bottom, collider.rect.y)
+
+    def test_check_fireball_y_collisions_case_2(self):
+        fireball = FireBall(0, 0, True)
+        enemy = self.level1.enemy_group_list[0].sprites()[0]
+        pg.sprite.spritecollideany = Mock()
+        pg.sprite.spritecollideany.side_effect = [None, enemy, None, None, None, None]
+        with patch.object(self.level1, 'fireball_kill') as mock_fireball_kill:
+            self.level1.check_fireball_y_collisions(fireball)
+            mock_fireball_kill.assert_called_once_with(fireball, enemy)
+
+    def test_check_fireball_y_collisions_case_3(self):
+        fireball = FireBall(0, 0, True)
+        shell = self.level1.enemy_group_list[0].sprites()[0]
+        pg.sprite.spritecollideany = Mock()
+        pg.sprite.spritecollideany.side_effect = [None, None, shell, None, None, None]
+        with patch.object(self.level1, 'fireball_kill') as mock_fireball_kill:
+            self.level1.check_fireball_y_collisions(fireball)
+            mock_fireball_kill.assert_called_once_with(fireball, shell)
+
+    def test_fireball_kill(self):
+        fireball = FireBall(0, 0, True)
+        enemy = self.level1.enemy_group_list[0].sprites()[0]
+        self.level1.fireball_kill(fireball, enemy)
+        assert enemy, fireball in self.level1.sprites_about_to_die_group
+
+    def test_check_if_falling(self):
+        mushroom = Mushroom(0,0)
+        self.level1.check_if_falling(mushroom, self.level1.ground_step_pipe_group)
+        self.assertEqual(mushroom.state, c.FALL)
+
+    def test_delete_if_off_screen_case_1(self):
+        enemy = self.level1.enemy_group_list[0].sprites()[0]
+        enemy.rect.x = -1000
+        with patch.object(enemy, 'kill') as mock_kill:
+            self.level1.delete_if_off_screen(enemy)
+            mock_kill.assert_called_once_with()
+
+    def test_delete_if_off_screen_case_2(self):
+        enemy = self.level1.enemy_group_list[0].sprites()[0]
+        self.level1.viewport.bottom = 0
+        with patch.object(enemy, 'kill') as mock_kill:
+            self.level1.delete_if_off_screen(enemy)
+            mock_kill.assert_called_once_with()
+
+    def test_delete_if_off_screen_case_3(self):
+        enemy = self.level1.enemy_group_list[0].sprites()[0]
+        enemy.state = c.SHELL_SLIDE
+        self.level1.viewport.bottom = 9999990
+        self.level1.viewport.right = -10000
+        with patch.object(enemy, 'kill') as mock_kill:
+            self.level1.delete_if_off_screen(enemy)
+            mock_kill.assert_called_once_with()
+
+    def test_check_flag(self):
+        self.level1.flag.state = c.BOTTOM_OF_POLE
+        self.level1.mario.state = c.FLAGPOLE
+        with patch.object(self.level1.mario, 'set_state_to_bottom_of_pole') as mock_set_state_to_bottom_of_pole:
+            self.level1.check_flag()
+            mock_set_state_to_bottom_of_pole.assert_called_once_with()
+
+    def test_check_to_add_flag_score(self):
+        self.level1.flag_score = MagicMock()
+        self.level1.flag_score.y_vel = 0
+        old_score = self.level1.game_info[c.SCORE]
+        self.level1.check_to_add_flag_score()
+        self.assertEqual(old_score + self.level1.flag_score_total, self.level1.game_info[c.SCORE])
+        self.assertEqual(self.level1.flag_score_total, 0)
+
+    def test_check_for_mario_death(self):
+        self.level1.mario.rect.y = 10000
+        self.level1.mario.in_castle = False
+        self.level1.mario.dead = True
+        with patch.object(self.level1, 'play_death_song') as mock_play_death_song:
+            self.level1.check_for_mario_death()
+            self.assertTrue(self.level1.mario.dead)
+            self.assertEqual(self.level1.mario.x_vel, 0)
+            self.assertEqual(self.level1.state, c.FROZEN)
+            self.assertTrue(self.level1.game_info[c.MARIO_DEAD])
+            mock_play_death_song.assert_called_once_with()
+
+    def test_play_death_song_case_1(self):
+        self.level1.death_timer = 0
+        self.level1.play_death_song()
+        self.assertEqual(self.level1.death_timer, self.level1.current_time)
+
+    def test_play_death_song_case_2(self):
+        self.level1.death_timer = 1
+        self.level1.current_time = 3999
+        self.level1.play_death_song()
+        self.assertTrue(self.level1.done)
