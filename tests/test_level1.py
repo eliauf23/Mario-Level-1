@@ -110,14 +110,14 @@ class TestLevel1(TestCase):
             score.Score(self.level1.mario.rect.right - self.level1.viewport.x,
                         self.level1.mario.rect.y, 100))
         self.level1.flag_score = score.Score(1, 1, 100, True)
-        print("sdfdfs")
         with patch.object(self.level1.mario, 'update') as mock_update:
             with patch.object(self.level1.overhead_info_display, 'update') as mock_update_2:
                 with patch.object(self.level1, 'check_to_add_flag_score') as mock_check_to_add_flag_score:
-                    self.level1.update_all_sprites(self.keys)
-                    mock_update.assert_called_once_with(self.keys, self.level1.game_info, self.level1.powerup_group)
-                    mock_update_2.assert_called_once_with(self.level1.game_info, self.level1.mario)
-                    mock_check_to_add_flag_score.assert_called_once_with()
+                    with patch.object(self.level1, 'adjust_sprite_positions'):
+                        self.level1.update_all_sprites(self.keys)
+                        mock_update.assert_called_once_with(self.keys, self.level1.game_info, self.level1.powerup_group)
+                        mock_update_2.assert_called_once_with(self.level1.game_info, self.level1.mario)
+                        mock_check_to_add_flag_score.assert_called_once_with()
 
     def test_check_points_check_case1(self):
         checkpoint = pg.sprite.Sprite()
@@ -323,14 +323,14 @@ class TestLevel1(TestCase):
         self.assertEqual(self.level1.mario.state, c.SMALL_TO_BIG)
         self.assertTrue(self.level1.mario.in_transition_state)
 
-    def test_update_all_sprites(self):
-        with patch.object(self.level1, 'check_if_mario_in_transition_state') as mock_check_if_mario_in_transition_state:
-            with patch.object(self.level1, 'check_for_mario_death') as mock_check_for_mario_death:
-                with patch.object(self.level1, 'update_viewport') as mock_update_viewport:
-                    self.level1.update_all_sprites(self.keys)
-                    mock_check_if_mario_in_transition_state.assert_called_once_with()
-                    mock_check_for_mario_death.assert_called_once_with()
-                    mock_update_viewport.assert_called_once_with()
+    # def test_update_all_sprites(self):
+    #     with patch.object(self.level1, 'check_if_mario_in_transition_state') as mock_check_if_mario_in_transition_state:
+    #         with patch.object(self.level1, 'check_for_mario_death') as mock_check_for_mario_death:
+    #             with patch.object(self.level1, 'update_viewport') as mock_update_viewport:
+    #                 self.level1.update_all_sprites(self.keys)
+    #                 mock_check_if_mario_in_transition_state.assert_called_once_with()
+    #                 mock_check_for_mario_death.assert_called_once_with()
+    #                 mock_update_viewport.assert_called_once_with()
 
     def test_convert_mushrooms_to_fireflowers(self):
         for brick in self.level1.brick_group:
@@ -547,7 +547,6 @@ class TestLevel1(TestCase):
             self.assertEqual(self.level1.game_info[c.COIN_TOTAL], old_coin_total + 1)
             self.assertEqual(self.level1.game_info[c.SCORE], old_score + 200)
 
-
     # testing adjust_mario_for_y_brick_collisions when first elif is executed
     def test_adjust_mario_for_y_brick_collisions_first_elif(self):
         brick = self.level1.brick_group.sprites()[0]
@@ -590,18 +589,6 @@ class TestLevel1(TestCase):
             assert enemy in self.level1.sprites_about_to_die_group
             mock_start_death_jump.assert_called_once_with('left')
 
-
-
-    # testing adjust_mario_for_y_ground_pipe_collisions when first if evals to true
-    def test_adjust_mario_for_y_ground_pipe_collisions_both_ifs(self):
-        collider = self.level1.coin_box_group.sprites()[0]
-        collider.rect.bottom = 100000
-        # self.level1.mario.state = c.END_OF_LEVEL_FALL
-        self.level1.adjust_mario_for_y_ground_pipe_collisions(collider)
-        self.assertEqual(self.level1.mario.y_vel, 0)
-        self.assertEqual(self.level1.mario.rect.bottom, collider.rect.top)
-        self.assertEqual(self.level1.mario.state, c.WALK)
-
     # testing adjust_mario_for_y_ground_pipe_collisions when elif evals to true
     def test_adjust_mario_for_y_ground_pipe_collisions_elif(self):
         collider = self.level1.coin_box_group.sprites()[0]
@@ -612,20 +599,17 @@ class TestLevel1(TestCase):
         self.assertEqual(self.level1.mario.rect.top, collider.rect.bottom)
         self.assertEqual(self.level1.mario.state, c.FALL)
 
-    def test_update_all_sprites(self):
-        self.level1.moving_score_list.append(
-            score.Score(self.level1.mario.rect.right - self.level1.viewport.x,
-                        self.level1.mario.rect.y, 100))
-        self.level1.flag_score = score.Score(1, 1, 100, True)
-        with patch.object(self.level1.mario, 'update') as mock_update:
-            with patch.object(self.level1.overhead_info_display, 'update') as mock_update_2:
-                with patch.object(self.level1, 'check_to_add_flag_score') as mock_check_to_add_flag_score:
-                    self.level1.update_all_sprites(self.keys)
-                    mock_update.assert_called_once_with(self.keys, self.level1.game_info, self.level1.powerup_group)
-                    mock_update_2.assert_called_once_with(self.level1.game_info, self.level1.mario)
-                    mock_check_to_add_flag_score.assert_called_once_with()
+    # testing adjust_mario_for_y_ground_pipe_collisions when first if evals to true
+    def test_adjust_mario_for_y_ground_pipe_collisions_first_else(self):
+        collider = self.level1.coin_box_group.sprites()[0]
+        collider.rect.bottom = 100000
+        # self.level1.mario.state = c.END_OF_LEVEL_FALL
+        self.level1.adjust_mario_for_y_ground_pipe_collisions(collider)
+        self.assertEqual(self.level1.mario.y_vel, 0)
+        self.assertEqual(self.level1.mario.rect.bottom, collider.rect.top)
+        self.assertEqual(self.level1.mario.state, c.WALK)
 
-        # testing adjust_mario_for_y_ground_pipe_collisions when both ifs eval to true
+    # testing adjust_mario_for_y_ground_pipe_collisions when both ifs eval to true
     def test_adjust_mario_for_y_ground_pipe_collisions_both_ifs(self):
         collider = self.level1.coin_box_group.sprites()[0]
         collider.rect.bottom = 100000
@@ -636,3 +620,124 @@ class TestLevel1(TestCase):
         self.assertEqual(self.level1.mario.rect.bottom, collider.rect.top)
         self.assertEqual(self.level1.mario.state, c.WALKING_TO_CASTLE)
 
+    def test_test_if_mario_is_falling_inner_if(self):
+        pg.sprite.spritecollideany = Mock()
+        pg.sprite.spritecollideany.side_effect = [None, None]
+        self.level1.test_if_mario_is_falling()
+        self.assertEqual(self.level1.mario.state, c.FALL)
+
+    def test_test_if_mario_is_falling_inner_elif(self):
+        pg.sprite.spritecollideany = Mock()
+        pg.sprite.spritecollideany.side_effect = [None, None]
+        self.level1.mario.state = c.WALKING_TO_CASTLE
+        self.level1.test_if_mario_is_falling()
+        self.assertEqual(self.level1.mario.state, c.END_OF_LEVEL_FALL)
+
+    def test_adjust_mario_for_y_enemy_collisions_both_ifs(self):
+        enemy = self.level1.enemy_group_list[0].sprites()[0]
+        enemy.name = c.GOOMBA
+        self.level1.mario.y_vel = 1
+        self.level1.adjust_mario_for_y_enemy_collisions(enemy)
+        self.assertEqual(enemy.state, c.JUMPED_ON)
+        self.assertEqual(enemy.death_timer, self.level1.current_time)
+        assert enemy in self.level1.sprites_about_to_die_group
+        self.assertEqual(self.level1.mario.rect.bottom, enemy.rect.top)
+        self.assertEqual(self.level1.mario.state, c.JUMP)
+        self.assertEqual(self.level1.mario.y_vel, -7)
+
+    def test_adjust_mario_for_y_enemy_collisions_elif(self):
+        enemy = self.level1.enemy_group_list[0].sprites()[0]
+        enemy.name = c.KOOPA
+        self.level1.mario.y_vel = 1
+        self.level1.adjust_mario_for_y_enemy_collisions(enemy)
+        self.assertEqual(enemy.state, c.JUMPED_ON)
+        self.assertEqual(enemy.death_timer, self.level1.current_time)
+        assert enemy in self.level1.shell_group
+        self.assertEqual(self.level1.mario.rect.bottom, enemy.rect.top)
+        self.assertEqual(self.level1.mario.state, c.JUMP)
+        self.assertEqual(self.level1.mario.y_vel, -7)
+
+    def test_adjust_mario_for_y_shell_collisions_all_ifs(self):
+        shell = self.level1.enemy_group_list[0].sprites()[0]
+        shell.state = c.JUMPED_ON
+        self.level1.mario.rect.centerx = shell.rect.centerx - 1
+        self.level1.mario.y_vel = 1
+        self.level1.adjust_mario_for_y_shell_collisions(shell)
+        self.assertEqual(shell.state, c.SHELL_SLIDE)
+        self.assertEqual(shell.direction, c.RIGHT)
+        self.assertEqual(shell.rect.left, self.level1.mario.rect.right + 5)
+
+    def test_adjust_mario_for_y_shell_collisions_first_else(self):
+        shell = self.level1.enemy_group_list[0].sprites()[0]
+        shell.state = c.JUMPED_ON
+        self.level1.mario.rect.centerx = shell.rect.centerx + 1
+        self.level1.mario.y_vel = 1
+        self.level1.adjust_mario_for_y_shell_collisions(shell)
+        self.assertEqual(shell.state, c.SHELL_SLIDE)
+        self.assertEqual(shell.direction, c.LEFT)
+        self.assertEqual(shell.rect.right, self.level1.mario.rect.left - 5)
+
+    def test_adjust_mario_for_y_shell_collisions_second_else(self):
+        shell = self.level1.enemy_group_list[0].sprites()[0]
+        shell.state = c.COIN_TOTAL
+        self.level1.mario.rect.centerx = shell.rect.centerx + 1
+        self.level1.mario.y_vel = 1
+        self.level1.adjust_mario_for_y_shell_collisions(shell)
+        self.assertEqual(shell.state, c.JUMPED_ON)
+
+    def test_adjust_enemy_position(self):
+        enemy = self.level1.enemy_group_list[0].sprites()[0]
+        self.level1.enemy_group.add(enemy)
+        with patch.object(self.level1, 'delete_if_off_screen') as mock_delete_if_off_screen:
+            self.level1.adjust_enemy_position()
+            mock_delete_if_off_screen.assert_called_once_with(enemy)
+
+    def test_check_enemy_x_collisions_collider_case_1(self):
+        pg.sprite.spritecollideany = Mock()
+        enemy = self.level1.enemy_group_list[0].sprites()[0]
+        enemy.direction = c.RIGHT
+        collider = self.level1.ground_step_pipe_group.sprites()[0]
+        pg.sprite.spritecollideany.side_effect = [collider, 0, 0, 0, 0, 0]
+        self.level1.check_enemy_x_collisions(enemy)
+        self.assertEqual(enemy.rect.right, collider.rect.left)
+        self.assertEqual(enemy.direction, c.LEFT)
+        self.assertEqual(enemy.x_vel, -2)
+        assert enemy in self.level1.enemy_group
+        assert self.level1.enemy_group in self.level1.mario_and_enemy_group
+
+    def test_check_enemy_x_collisions_collider_case_2(self):
+        pg.sprite.spritecollideany = Mock()
+        enemy = self.level1.enemy_group_list[0].sprites()[0]
+        enemy.direction = c.LEFT
+        collider = self.level1.ground_step_pipe_group.sprites()[0]
+        pg.sprite.spritecollideany.side_effect = [collider, 0, 0, 0, 0, 0]
+        self.level1.check_enemy_x_collisions(enemy)
+        self.assertEqual(enemy.rect.left, collider.rect.right)
+        self.assertEqual(enemy.direction, c.RIGHT)
+        self.assertEqual(enemy.x_vel, 2)
+        assert enemy in self.level1.enemy_group
+        assert self.level1.enemy_group in self.level1.mario_and_enemy_group
+
+    def test_check_enemy_x_collisions_enemy_collider_case_1(self):
+        pg.sprite.spritecollideany = Mock()
+        enemy_collider = self.level1.enemy_group_list[0].sprites()[0]
+        enemy_collider.direction = c.RIGHT
+        collider = self.level1.ground_step_pipe_group.sprites()[0]
+        pg.sprite.spritecollideany.side_effect = [0, enemy_collider, 0, 0, 0, 0]
+        self.level1.check_enemy_x_collisions(enemy_collider)
+        self.assertEqual(enemy_collider.rect.right, collider.rect.left)
+        self.assertEqual(enemy_collider.direction, c.RIGHT)
+        self.assertEqual(enemy_collider.x_vel, 2)
+        assert enemy_collider in self.level1.enemy_group
+        assert self.level1.enemy_group in self.level1.mario_and_enemy_group
+
+    def test_check_enemy_x_collisions_enemy_collider_case_2(self):
+        pg.sprite.spritecollideany = Mock()
+        enemy_collider = self.level1.enemy_group_list[0].sprites()[0]
+        enemy_collider.direction = c.LEFT
+        pg.sprite.spritecollideany.side_effect = [0, enemy_collider, 0, 0, 0, 0]
+        self.level1.check_enemy_x_collisions(enemy_collider)
+        self.assertEqual(enemy_collider.direction, c.LEFT)
+        self.assertEqual(enemy_collider.x_vel, -2)
+        assert enemy_collider in self.level1.enemy_group
+        assert self.level1.enemy_group in self.level1.mario_and_enemy_group
