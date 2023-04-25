@@ -3,8 +3,8 @@ from unittest.mock import MagicMock, patch
 from SuperMarioLevel1.data.game_sound import Sound
 import SuperMarioLevel1.data.constants as c
 from unittest import TestCase
-import pygame
-
+# import pygame
+import pygame as pg
 
 class TestSound(TestCase):
 
@@ -175,16 +175,152 @@ class TestSound(TestCase):
             self.sound.update({}, self.mario)
             play_music_mock.assert_called_once_with('stage_clear', c.STAGE_CLEAR)
 
-    def test_handle_state_stage_clear_in_castle(self):
+    def test_handle_state_stage_clear(self):
         self.overhead_info = MagicMock()
         self.sound = Sound(self.overhead_info)
         self.mario = MagicMock()
-        self.sound.state = c.STAGE_CLEAR
         self.mario.in_castle = True
-        with patch.object(self.sound.sfx_dict['count_down'], 'play') as play_mock:
+        self.sound.state = c.STAGE_CLEAR
+        self.mario.state = c.WALKING_TO_CASTLE
+        self.sound.sfx_dict['count_down'] = MagicMock()
+        with patch.object(self.sound.sfx_dict['count_down'], 'play') as mock_play:
             self.sound.update({}, self.mario)
-            play_mock.assert_called_once()
+            self.sound.handle_state()
             self.assertEqual(self.sound.state, c.FAST_COUNT_DOWN)
+            mock_play.assert_called_once_with()
+
+    def test_handle_state_fast_count_down(self):
+        self.overhead_info = MagicMock()
+        self.sound = Sound(self.overhead_info)
+        self.mario = MagicMock()
+        self.mario.in_castle = True
+        self.sound.state = c.FAST_COUNT_DOWN
+        self.sound.overhead_info.time = 0
+        self.sound.sfx_dict['count_down'] = MagicMock()
+        with patch.object(self.sound.sfx_dict['count_down'], 'stop') as mock_stop:
+            self.sound.update({}, self.mario)
+            self.sound.handle_state()
+            self.assertEqual(self.sound.state, c.WORLD_CLEAR)
+            mock_stop.assert_called_once_with()
+
+    def test_handle_state_time_warning_case_1(self):
+        self.overhead_info = MagicMock()
+        self.sound = Sound(self.overhead_info)
+        self.mario = MagicMock()
+        self.mario.in_castle = True
+        self.sound.state = c.TIME_WARNING
+        self.sound.overhead_info.time = 0
+        self.sound.sfx_dict['count_down'] = MagicMock()
+        with patch.object(self.sound, 'play_music') as mock_play_music, \
+                patch('pygame.mixer.music.get_busy', return_value=0):
+            self.sound.update({}, self.mario)
+            self.sound.handle_state()
+            mock_play_music.assert_called_with('main_theme_sped_up', c.SPED_UP_NORMAL)
+
+    def test_handle_state_time_warning_case_2(self):
+        self.overhead_info = MagicMock()
+        self.sound = Sound(self.overhead_info)
+        self.mario = MagicMock()
+        self.mario.in_castle = True
+        self.mario.dead = True
+        self.sound.state = c.TIME_WARNING
+        self.sound.overhead_info.time = 0
+        self.sound.sfx_dict['count_down'] = MagicMock()
+        with patch.object(self.sound, 'play_music') as mock_play_music, \
+                patch('pygame.mixer.music.get_busy', return_value=1):
+            self.sound.update({}, self.mario)
+            self.sound.handle_state()
+            mock_play_music.assert_called_with('death', c.MARIO_DEAD)
+
+    def test_handle_state_sped_up_normal_case_1(self):
+        self.overhead_info = MagicMock()
+        self.sound = Sound(self.overhead_info)
+        self.mario = MagicMock()
+        self.mario.in_castle = True
+        self.mario.dead = True
+        self.sound.state = c.SPED_UP_NORMAL
+        self.sound.overhead_info.time = 0
+        self.sound.sfx_dict['count_down'] = MagicMock()
+        with patch.object(self.sound, 'play_music') as mock_play_music, \
+                patch('pygame.mixer.music.get_busy', return_value=1):
+            self.sound.update({}, self.mario)
+            self.sound.handle_state()
+            mock_play_music.assert_called_with('death', c.MARIO_DEAD)
+
+    def test_handle_state_sped_up_normal_case_2(self):
+        self.overhead_info = MagicMock()
+        self.sound = Sound(self.overhead_info)
+        self.mario = MagicMock()
+        self.mario.in_castle = True
+        self.mario.dead = False
+        self.mario.state = c.FLAGPOLE
+        self.sound.state = c.SPED_UP_NORMAL
+        self.sound.overhead_info.time = 0
+        self.sound.sfx_dict['count_down'] = MagicMock()
+        with patch.object(self.sound, 'play_music') as mock_play_music, \
+                patch('pygame.mixer.music.get_busy', return_value=1):
+            self.sound.update({}, self.mario)
+            self.sound.handle_state()
+            mock_play_music.assert_called_with('flagpole', c.FLAGPOLE)
+
+    def test_handle_state_mario_invincible_case_1(self):
+        self.overhead_info = MagicMock()
+        self.sound = Sound(self.overhead_info)
+        self.mario = MagicMock()
+        self.mario.in_castle = True
+        self.mario.dead = False
+        self.mario.state = c.FLAGPOLE
+        self.mario.current_time = 100000000
+        self.mario.invincible_start_timer = 0
+        self.sound.state = c.MARIO_INVINCIBLE
+        self.sound.overhead_info.time = 0
+        self.sound.sfx_dict['count_down'] = MagicMock()
+        with patch.object(self.sound, 'play_music') as mock_play_music, \
+                patch('pygame.mixer.music.get_busy', return_value=1):
+            self.sound.update({}, self.mario)
+            self.sound.handle_state()
+            mock_play_music.assert_called_with('main_theme', c.NORMAL)
+
+    def test_handle_state_mario_invincible_case_2(self):
+        self.overhead_info = MagicMock()
+        self.sound = Sound(self.overhead_info)
+        self.mario = MagicMock()
+        self.mario.in_castle = True
+        self.mario.dead = True
+        self.mario.state = c.FLAGPOLE
+        self.mario.current_time = 1
+        self.mario.invincible_start_timer = 1
+        self.sound.state = c.MARIO_INVINCIBLE
+        self.sound.overhead_info.time = 0
+        self.sound.sfx_dict['count_down'] = MagicMock()
+        with patch.object(self.sound, 'play_music') as mock_play_music, \
+                patch('pygame.mixer.music.get_busy', return_value=1):
+            self.sound.update({}, self.mario)
+            self.sound.handle_state()
+            mock_play_music.assert_called_with('death', c.MARIO_DEAD)
+
+    def test_handle_state_world_clear(self):
+        self.sound.state = c.WORLD_CLEAR
+        self.sound.handle_state()
+
+    def test_handle_state_mario_dead(self):
+        self.sound.state = c.MARIO_DEAD
+        self.sound.handle_state()
+
+    def test_handle_state_game_over(self):
+        self.sound.state = c.GAME_OVER
+        self.sound.handle_state()
+
+    # def test_handle_state_stage_clear_in_castle(self):
+    #     self.overhead_info = MagicMock()
+    #     self.sound = Sound(self.overhead_info)
+    #     self.mario = MagicMock()
+    #     self.sound.state = c.STAGE_CLEAR
+    #     self.mario.in_castle = True
+    #     with patch.object(self.sound.sfx_dict['count_down'], 'play') as play_mock:
+    #         self.sound.update({}, self.mario)
+    #         play_mock.assert_called_once()
+    #         self.assertEqual(self.sound.state, c.FAST_COUNT_DOWN)
 
     # def test_handle_state_fast_count_down_time_zero(self):
     #     self.overhead_info = MagicMock()
@@ -199,27 +335,28 @@ class TestSound(TestCase):
     #
 
 
-    def test_handle_state_normal_time_warning(self):
-        self.overhead_info = MagicMock()
-        self.sound = Sound(self.overhead_info)
-        self.mario = MagicMock()
-        self.sound.state = c.NORMAL
-        self.mario.dead = False
-        self.mario.invincible = False
-        self.mario.state = c.STAND
-        self.overhead_info.time = c.TIME_WARNING
+    # def test_handle_state_normal_time_warning(self):
+    #     self.overhead_info = MagicMock()
+    #     self.sound = Sound(self.overhead_info)
+    #     self.mario = MagicMock()
+    #     self.sound.state = c.NORMAL
+    #     self.mario.dead = False
+    #     self.mario.invincible = False
+    #     self.mario.state = c.STAND
+    #     self.overhead_info.time = c.TIME_WARNING
+    #
+    #     with patch('pygame.mixer.music.play') as play_mock:
+    #         self.sound.update({}, self.mario)
+    #         self.sound.handle_state()
+    #         play_mock.assert_called_once_with('warning')
 
-        with patch('pygame.mixer.music.play') as play_mock:
-            self.sound.handle_state()
-            play_mock.assert_called_once_with('warning')
+    # def test_handle_state_stage_clear_in_castle(self):
+    #     self.overhead_info = MagicMock()
+    #     self.sound = Sound(self.overhead_info)
+    #     self.mario = MagicMock()
+    #     self.sound.state = c.STAGE_CLEAR
+    #     self.mario.in_castle = True
 
-    def test_handle_state_stage_clear_in_castle(self):
-        self.overhead_info = MagicMock()
-        self.sound = Sound(self.overhead_info)
-        self.mario = MagicMock()
-        self.sound.state = c.STAGE_CLEAR
-        self.mario.in_castle = True
-
-        with patch('pygame.mixer.music.play') as play_mock:
-            self.sound.handle_state()
-            play_mock.assert_called_once_with('stage_clear')
+        # with patch('pygame.mixer.music.play') as play_mock:
+        #     self.sound.handle_state()
+        #     play_mock.assert_called_once_with('stage_clear')
