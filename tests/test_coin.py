@@ -4,7 +4,7 @@ import pygame as pg
 from SuperMarioLevel1.data.components.coin import Coin
 from SuperMarioLevel1.data import constants as c
 from SuperMarioLevel1.data.components.score import Score
-import numpy
+# import numpy
 
 
 class TestCoin(TestCase):
