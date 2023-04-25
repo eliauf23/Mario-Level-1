@@ -5,7 +5,7 @@ import SuperMarioLevel1.data.constants as c
 from SuperMarioLevel1.data.states.level1 import Level1
 import SuperMarioLevel1.data.setup as setup
 import SuperMarioLevel1.data.tools as tools
-from data.components import score, bricks
+from data.components import score, bricks, castle_flag
 from data.components.powerups import LifeMushroom, Mushroom, Star, FireBall
 from data.components.score import Score
 
@@ -211,6 +211,14 @@ class TestLevel1(TestCase):
             self.level1.check_mario_x_collisions()
             mock_adjust_mario_for_x_collisions.assert_called_once_with(brick)
 
+    def test_check_mario_x_collisions_case_coin_box(self):
+        pg.sprite.spritecollideany = Mock()
+        coin_box = self.level1.coin_box_group.sprites()[0]
+        pg.sprite.spritecollideany.side_effect = [0, coin_box, 0, 0, 0, 0]
+        with patch.object(self.level1, 'adjust_mario_for_x_collisions') as mock_adjust_mario_for_x_collisions:
+            self.level1.check_mario_x_collisions()
+            mock_adjust_mario_for_x_collisions.assert_called_once_with(coin_box)
+
     def test_check_mario_x_collisions_case_collider(self):
         pg.sprite.spritecollideany = Mock()
         collider = pg.sprite.spritecollideany(self.level1.mario, self.level1.ground_step_pipe_group)
@@ -351,9 +359,18 @@ class TestLevel1(TestCase):
         for coin_box in self.level1.coin_group:
             self.assertEqual(coin_box.contents, c.MUSHROOM)
 
-    def test_adjust_mario_for_x_collisions(self):
+    # testing adjust_mario_for_x_collisions when if statement is true
+    def test_adjust_mario_for_x_collisions_case_1(self):
         self.level1.adjust_mario_for_x_collisions(self.level1.coin_box_group.sprites()[0])
         self.assertEqual(self.level1.mario.rect.right, self.level1.coin_box_group.sprites()[0].rect.left)
+        self.assertEqual(self.level1.mario.x_vel, 0)
+
+    # testing adjust_mario_for_x_collisions when if statement is false
+    def test_adjust_mario_for_x_collisions_case_2(self):
+        self.level1.coin_box_group.sprites()[0].rect.x = -100000
+        self.level1.adjust_mario_for_x_collisions(self.level1.coin_box_group.sprites()[0])
+        self.assertEqual(self.level1.mario.rect.left, self.level1.coin_box_group.sprites()[0].rect.right)
+        self.assertEqual(self.level1.mario.x_vel, 0)
 
     def test_adjust_mario_for_x_shell_collisions_case1(self):
         shell = self.level1.coin_box_group.sprites()[0]
@@ -418,6 +435,17 @@ class TestLevel1(TestCase):
                 mock_adjust_mario_for_y_brick_collisions.assert_called_once_with(brick)
                 mock_test_if_mario_is_falling.assert_called_once_with()
 
+    def test_check_mario_y_collisions_case_coin_box(self):
+        pg.sprite.spritecollideany = Mock()
+        coin_box = self.level1.coin_box_group.sprites()[0]
+        pg.sprite.spritecollideany.side_effect = [0, 0, 0, 0, coin_box, 0]
+        with patch.object(self.level1,
+                          'adjust_mario_for_y_coin_box_collisions') as mock_adjust_mario_for_y_coin_box_collisions:
+            with patch.object(self.level1, 'test_if_mario_is_falling') as mock_test_if_mario_is_falling:
+                self.level1.check_mario_y_collisions()
+                mock_adjust_mario_for_y_coin_box_collisions.assert_called_once_with(coin_box)
+                mock_test_if_mario_is_falling.assert_called_once_with()
+
     def test_check_mario_y_collisions_case_ground_step_or_pipe(self):
         pg.sprite.spritecollideany = Mock()
         ground_step_or_pipe = self.level1.ground_step_pipe_group.sprites()[0]
@@ -479,10 +507,17 @@ class TestLevel1(TestCase):
     def test_prevent_collision_conflict_all_ifs(self):
         brick = self.level1.brick_group.sprites()[0]
         coin_box = self.level1.coin_box_group.sprites()[0]
-        # print(self.level1.mario.rect.centerx- brick.rect.centerx) # is -571
-        # print(self.level1.mario.rect.centerx - coin_box.rect.centerx) # is -578
         o1, o2 = self.level1.prevent_collision_conflict(coin_box, brick)
         self.assertFalse(o2)
+
+    # testing whether prevent_collision_conflict behaves corretly when the else statement is executed
+    def test_prevent_collision_conflict_else(self):
+        brick = self.level1.brick_group.sprites()[0]
+        coin_box = self.level1.coin_box_group.sprites()[0]
+        brick.rect.centerx = 0
+        coin_box.rect.centerx = 0
+        o1, o2 = self.level1.prevent_collision_conflict(coin_box, brick)
+        self.assertFalse(o1)
 
     # testing adjust_mario_for_y_coin_box_collisions when all if statements evaluate to true
     def test_adjust_mario_for_y_coin_box_collisions_all_ifs(self):
@@ -1157,6 +1192,9 @@ class TestLevel1(TestCase):
 
     def test_check_if_falling(self):
         mushroom = Mushroom(0,0)
+        mushroom.state = c.COIN
+        pg.sprite.spritecollideany = Mock()
+        pg.sprite.spritecollideany.side_effect = [None, None, None, None, None, None]
         self.level1.check_if_falling(mushroom, self.level1.ground_step_pipe_group)
         self.assertEqual(mushroom.state, c.FALL)
 
@@ -1220,3 +1258,98 @@ class TestLevel1(TestCase):
         self.level1.current_time = 3999
         self.level1.play_death_song()
         self.assertTrue(self.level1.done)
+
+    # tests set_game_info_values where all outer if statements eval to True
+    def test_set_game_info_values_all_ifs(self):
+        self.level1.game_info[c.SCORE] = 1
+        self.level1.persist[c.TOP_SCORE] = 0
+        self.level1.mario.dead = True
+        self.level1.persist[c.LIVES] = 1
+        self.level1.set_game_info_values()
+        self.assertEqual(self.level1.persist[c.TOP_SCORE], self.level1.game_info[c.SCORE])
+        self.assertEqual(self.level1.persist[c.LIVES], 0)
+        self.assertEqual(self.level1.next, c.GAME_OVER)
+        self.assertEqual(self.level1.game_info[c.CAMERA_START_X], 0)
+
+    # testing whether set_game_info_values behaves correctly when second elif evals to True
+    def test_set_game_info_values_second_elif(self):
+        self.level1.mario.dead = True
+        self.level1.persist[c.LIVES] = 100
+        self.level1.overhead_info_display.time = 0
+        self.level1.set_game_info_values()
+        self.assertEqual(self.level1.next, c.TIME_OUT)
+
+    # testing whether set_game_info_values behaves correctly when final else evals to True
+    def test_set_game_info_values_final_else(self):
+        self.level1.mario.dead = True
+        self.level1.persist[c.LIVES] = 100
+        self.level1.overhead_info_display.time = 1
+        self.level1.mario.rect.x = 10000
+        self.level1.game_info[c.CAMERA_START_X] = 0
+        self.level1.set_game_info_values()
+        self.assertEqual(self.level1.game_info[c.CAMERA_START_X], 3440)
+        self.assertEqual(self.level1.next, c.LOAD_SCREEN)
+
+    def test_check_if_time_out(self):
+        self.level1.overhead_info_display.time = 0
+        self.level1.mario.dead = False
+        self.level1.mario.in_castle = False
+        with patch.object(self.level1.mario, 'start_death_jump') as mock_start_death_jump:
+            self.level1.check_if_time_out()
+            self.assertEqual(self.level1.state, c.FROZEN)
+            mock_start_death_jump.assert_called_once_with(self.level1.game_info)
+
+    def test_update_viewport(self):
+        self.level1.viewport.x = 128
+        self.level1.viewport.w = 0
+        self.level1.viewport.centerx = 10000
+        self.level1.mario.x_vel += 1
+        self.level1.update_viewport()
+        self.assertEqual(self.level1.viewport.x, 128.5)
+
+    def test_update_while_in_castle(self):
+        self.level1.moving_score_list.append(
+            score.Score(self.level1.mario.rect.right - self.level1.viewport.x,
+                        self.level1.mario.rect.y, 100))
+        self.level1.overhead_info_display.state = c.END_OF_LEVEL
+        with patch.object(self.level1.overhead_info_display, 'update') as mock_update:
+            self.level1.update_while_in_castle()
+            mock_update.assert_called_once_with(self.level1.game_info)
+            self.assertEqual(self.level1.state, c.FLAG_AND_FIREWORKS)
+
+    def test_update_flag_and_fireworks(self):
+        self.level1.moving_score_list.append(
+            score.Score(self.level1.mario.rect.right - self.level1.viewport.x,
+                        self.level1.mario.rect.y, 100))
+        with patch.object(self.level1.overhead_info_display, 'update') as mock_update:
+            with patch.object(self.level1.flag_pole_group, 'update') as mock_flag_update:
+                with patch.object(self.level1, 'end_game') as mock_end_game:
+                    self.level1.update_flag_and_fireworks()
+                    mock_update.assert_called_once_with(self.level1.game_info)
+                    mock_end_game.assert_called_once_with()
+                    mock_flag_update.assert_called_once_with()
+
+    # testing end_game when first if statement evals to true
+    def test_end_game_case_1(self):
+        self.level1.flag_timer = 0
+        self.level1.end_game()
+        self.assertEqual(self.level1.flag_timer, self.level1.current_time)
+
+    # testing end_game when elif statement evals to true
+    def test_end_game_case_2(self):
+        self.level1.flag_timer = 1
+        self.level1.current_time = 3000
+        self.level1.end_game()
+        self.assertEqual(self.level1.next, c.GAME_OVER)
+        self.assertTrue(self.level1.done)
+
+    def test_blit_everything(self):
+        self.level1.moving_score_list.append(
+            score.Score(self.level1.mario.rect.right - self.level1.viewport.x,
+                        self.level1.mario.rect.y, 100))
+        surface = MagicMock()
+        self.level1.flag_score = MagicMock()
+        self.level1.level = MagicMock()
+        with patch.object(self.level1.level, 'blit') as mock_level_blit:
+            self.level1.blit_everything(surface)
+            mock_level_blit.assert_called_once_with(self.level1.background, self.level1.viewport, self.level1.viewport)
