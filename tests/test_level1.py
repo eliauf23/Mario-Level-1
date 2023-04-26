@@ -10,6 +10,11 @@ from data.components.powerups import LifeMushroom, Mushroom, Star, FireBall
 from data.components.score import Score
 
 
+# This is a test class for the Level1 class in /data/states/level1.py.
+# This class represents the entirety of Level1  (where each object is placed, etc).
+# There is at least one test for each Level1 method, asserting that the correct values were modified and the correct
+# methods were called. In order to achieve full coverage, some methods require multiple tests to achieve that their
+# behavior is correct across all possible cases.
 class TestLevel1(TestCase):
     @classmethod
     def setUpClass(cls):

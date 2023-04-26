@@ -4,7 +4,11 @@ import pygame as pg
 from SuperMarioLevel1.data.components.coin_box import Coin_box
 import SuperMarioLevel1.data.constants as c
 
-
+# This is a test class for the Coin_box class in /data/components/coin_box.py.
+# This class represents the Coin box sprite.
+# There is at least one test for each Coin_box method, asserting that the correct values were modified and the correct
+# methods were called. In order to achieve full coverage, some methods require multiple tests to achieve that their
+# behavior is correct across all possible cases.
 class TestCoinBox(TestCase):
 
     @classmethod

@@ -6,6 +6,12 @@ from unittest import TestCase
 # import pygame
 import pygame as pg
 
+
+# This is a test class for the Sound class in /data/game_sound.py.
+# This class handles all sound for the game.
+# There is at least one test for each Sound method, asserting that the correct values were modified and the correct
+# methods were called. In order to achieve full coverage, some methods require multiple tests to achieve that their
+# behavior is correct across all possible cases.
 class TestSound(TestCase):
 
     def setUp(self):
@@ -128,6 +134,7 @@ class TestSound(TestCase):
         with patch.object(self.sound, 'play_music') as play_music_mock:
             self.sound.update({}, self.mario)
             play_music_mock.assert_called_once_with('stage_clear', c.STAGE_CLEAR)
+
     #
     # def test_handle_state_stage_clear_in_castle(self):
     #     self.overhead_info = MagicMock()
@@ -140,7 +147,7 @@ class TestSound(TestCase):
     #         play_mock.assert_called_once()
     #         self.assertEqual(self.sound.state, c.FAST_COUNT_DOWN)
 
-    def test_handle_state_normal_flagpole(self):
+    def test_handle_state_normal_flagpole_1(self):
         self.overhead_info = MagicMock()
         self.sound = Sound(self.overhead_info)
         self.mario = MagicMock()
@@ -310,53 +317,3 @@ class TestSound(TestCase):
     def test_handle_state_game_over(self):
         self.sound.state = c.GAME_OVER
         self.sound.handle_state()
-
-    # def test_handle_state_stage_clear_in_castle(self):
-    #     self.overhead_info = MagicMock()
-    #     self.sound = Sound(self.overhead_info)
-    #     self.mario = MagicMock()
-    #     self.sound.state = c.STAGE_CLEAR
-    #     self.mario.in_castle = True
-    #     with patch.object(self.sound.sfx_dict['count_down'], 'play') as play_mock:
-    #         self.sound.update({}, self.mario)
-    #         play_mock.assert_called_once()
-    #         self.assertEqual(self.sound.state, c.FAST_COUNT_DOWN)
-
-    # def test_handle_state_fast_count_down_time_zero(self):
-    #     self.overhead_info = MagicMock()
-    #     self.sound = Sound(self.overhead_info)
-    #     self.mario = MagicMock()
-    #     self.sound.state = c.FAST_COUNT_DOWN
-    #     self.overhead_info.time = 0
-    #     with patch.object(self.sound.sfx_dict['count_down'], 'stop') as stop_mock:
-    #         self.sound.handle_state()
-    #         stop_mock.assert_called_once()
-    #         self.assertEqual(self.sound.state, c.WORLD_CLEAR)
-    #
-
-
-    # def test_handle_state_normal_time_warning(self):
-    #     self.overhead_info = MagicMock()
-    #     self.sound = Sound(self.overhead_info)
-    #     self.mario = MagicMock()
-    #     self.sound.state = c.NORMAL
-    #     self.mario.dead = False
-    #     self.mario.invincible = False
-    #     self.mario.state = c.STAND
-    #     self.overhead_info.time = c.TIME_WARNING
-    #
-    #     with patch('pygame.mixer.music.play') as play_mock:
-    #         self.sound.update({}, self.mario)
-    #         self.sound.handle_state()
-    #         play_mock.assert_called_once_with('warning')
-
-    # def test_handle_state_stage_clear_in_castle(self):
-    #     self.overhead_info = MagicMock()
-    #     self.sound = Sound(self.overhead_info)
-    #     self.mario = MagicMock()
-    #     self.sound.state = c.STAGE_CLEAR
-    #     self.mario.in_castle = True
-
-        # with patch('pygame.mixer.music.play') as play_mock:
-        #     self.sound.handle_state()
-        #     play_mock.assert_called_once_with('stage_clear')

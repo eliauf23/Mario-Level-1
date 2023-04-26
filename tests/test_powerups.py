@@ -6,6 +6,11 @@ from SuperMarioLevel1.data.components.powerups import Powerup, Mushroom, Star, F
 import SuperMarioLevel1.data.setup as setup
 
 
+# This is a test class for the Powerup class in /data/components/powerups.py.
+# This class represents the Base class for all powerup_group.
+# There is at least one test for each Powerup method, asserting that the correct values were modified and the correct
+# methods were called. In order to achieve full coverage, some methods require multiple tests to achieve that their
+# behavior is correct across all possible cases.
 class TestPowerup(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -36,6 +41,11 @@ class TestPowerup(TestCase):
         self.assertTrue(True)
 
 
+# This is a test class for the Mushroom class in /data/components/powerups.py.
+# This class represents the Powerup that makes Mario become bigger.
+# There is at least one test for each Mushroom method, asserting that the correct values were modified and the correct
+# methods were called. In order to achieve full coverage, some methods require multiple tests to achieve that their
+# behavior is correct across all possible cases.
 class TestMushroom(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -103,6 +113,11 @@ class TestMushroom(TestCase):
         self.assertEqual(self.mushroom.y_vel, 8)
 
 
+# This is a test class for the LifeMushroom class in /data/components/powerups.py.
+# This class represents the 1up mushroom.
+# There is at least one test for each LifeMushroom method, asserting that the correct values were modified and the correct
+# methods were called. In order to achieve full coverage, some methods require multiple tests to achieve that their
+# behavior is correct across all possible cases.
 class TestLifeMushroom(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -150,6 +165,11 @@ class TestLifeMushroom(TestCase):
         self.assertEqual(self.life_mushroom.y_vel, 8)
 
 
+# This is a test class for the FireFlower class in /data/components/powerups.py.
+# This class represents the Powerup that allows Mario to throw fire balls.
+# There is at least one test for each FireFlower method, asserting that the correct values were modified and the correct
+# methods were called. In order to achieve full coverage, some methods require multiple tests to achieve that their
+# behavior is correct across all possible cases.
 class TestFireFlower(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -222,6 +242,11 @@ class TestFireFlower(TestCase):
         self.assertEqual(self.fire_flower.image, self.fire_flower.frames[self.fire_flower.frame_index])
 
 
+# This is a test class for the Star class in /data/components/powerups.py.
+# This class represents the powerup that gives mario invincibility.
+# There is at least one test for each Star method, asserting that the correct values were modified and the correct
+# methods were called. In order to achieve full coverage, some methods require multiple tests to achieve that their
+# behavior is correct across all possible cases.
 class TestStar(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -304,6 +329,11 @@ class TestStar(TestCase):
         self.assertEqual(self.star.frame_index, 0)
 
 
+# This is a test class for the FireBall class in /data/components/powerups.py.
+# This class represents the Shot from Fire Mario.
+# There is at least one test for each FireBall method, asserting that the correct values were modified and the correct
+# methods were called. In order to achieve full coverage, some methods require multiple tests to achieve that their
+# behavior is correct across all possible cases.
 class TestFireBall(TestCase):
     @classmethod
     def setUpClass(cls):

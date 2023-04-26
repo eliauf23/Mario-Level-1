@@ -12,7 +12,11 @@ from data.components import score, bricks, castle_flag
 from data.components.powerups import LifeMushroom, Mushroom, Star, FireBall
 from data.components.score import Score
 
-
+# This is a test class for the LoadScreen class in /data/states/load_screen.py.
+# This class represents the loading screen of the game.
+# There is at least one test for each LoadScreen method, asserting that the correct values were modified and the correct
+# methods were called. In order to achieve full coverage, some methods require multiple tests to achieve that their
+# behavior is correct across all possible cases.
 class TestLoadScreen(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -114,6 +118,11 @@ class TestLoadScreen(TestCase):
         self.load_screen.update(surface, keys, 2636)
         self.assertTrue(self.load_screen.done)
 
+# This is a test class for the GameOver class in /data/states/load_screen.py.
+# This class represents A loading screen with Game Over.
+# There is at least one test for each GameOver method, asserting that the correct values were modified and the correct
+# methods were called. In order to achieve full coverage, some methods require multiple tests to achieve that their
+# behavior is correct across all possible cases.
 class TestGameOver(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -207,6 +216,11 @@ class TestGameOver(TestCase):
             self.game_over.update(surface, keys, 8000)
             self.assertTrue(self.game_over.done)
 
+# This is a test class for the TimeOut class in /data/states/load_screen.py.
+# This class represents A Loading Screen with Time Out.
+# There is at least one test for each TimeOut method, asserting that the correct values were modified and the correct
+# methods were called. In order to achieve full coverage, some methods require multiple tests to achieve that their
+# behavior is correct across all possible cases.
 class TestTimeOut(TestCase):
     @classmethod
     def setUpClass(cls):

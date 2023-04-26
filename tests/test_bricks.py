@@ -5,6 +5,11 @@ from unittest.mock import patch
 import pygame as pg
 
 
+# This is a test class for the Brick class in /data/components/bricks.py.
+# This class represents Bricks that can be destroyed.
+# There is at least one test for each Brick method, asserting that the correct values were modified and the correct
+# methods were called. In order to achieve full coverage, some methods require multiple tests to achieve that their
+# behavior is correct across all possible cases.
 class TestBrick(TestCase):
 
     def test_brick_init(self):
@@ -46,7 +51,7 @@ class TestBrick(TestCase):
 
 
 
-    def test_get_image(self):
+    def test_get_image_1(self):
         """Test get_image method"""
         test_brick = Brick(0, 0, contents='6coins')
         test_image = test_brick.get_image(16, 0, 16, 16)
@@ -141,7 +146,7 @@ class TestBrick(TestCase):
                 assert brick.sprite_sheet.get_rect().x == 0
                 assert brick.sprite_sheet.get_rect().y == 0
 
-    def test_brick_resting_coin_total_is_zero(self):
+    def test_brick_resting_coin_total_is_zero_1(self):
         with patch('SuperMarioLevel1.data.components.bricks.Brick.get_image', return_value=pg.Surface((16, 16))):
             brick = Brick(50, 50, contents='6coins')
             brick.state = c.RESTING
@@ -150,7 +155,7 @@ class TestBrick(TestCase):
             # state doesn't change to opened!
             self.assertEqual(brick.state, c.OPENED)
 
-    def test_brick_bumped_star(self):
+    def test_brick_bumped_star_1(self):
         with patch('SuperMarioLevel1.data.components.bricks.Brick.get_image', return_value=pg.Surface((16, 16))):
             brick = Brick(50, 50, contents='star')
             brick.state = c.BUMPED
@@ -159,6 +164,11 @@ class TestBrick(TestCase):
             self.assertEqual(brick.state, c.OPENED)
 
 
+# This is a test class for the BrickPiece class in /data/components/bricks.py.
+# This class represents Pieces that appear when bricks are broken.
+# There is at least one test for each BrickPiece method, asserting that the correct values were modified and the correct
+# methods were called. In order to achieve full coverage, some methods require multiple tests to achieve that their
+# behavior is correct across all possible cases.
 class TestBrickPiece(TestCase):
     def test_brick_piece_init(self):
         with patch('SuperMarioLevel1.data.components.bricks.Brick.get_image', return_value=pg.Surface((16, 16))):

@@ -6,6 +6,14 @@ import SuperMarioLevel1.data.constants as c
 from unittest import TestCase
 
 
+# This is a test class for the Control an _State classes in /data/tools.py.
+# The control class is for entire project. Contains the game loop, and contains
+#     the event_loop which passes events to States as needed. Logic for flipping
+#     states is also found here.
+# The _State class has the state for the game at the current time.
+# There is at least one test for each _State and Control method, asserting that the correct values were modified and the correct
+# methods were called. In order to achieve full coverage, some methods require multiple tests to achieve that their
+# behavior is correct across all possible cases.
 class TestTools(TestCase):
 
     @classmethod

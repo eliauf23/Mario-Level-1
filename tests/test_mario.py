@@ -9,6 +9,11 @@ import SuperMarioLevel1.data.setup as setup
 from SuperMarioLevel1.data.components.powerups import FireBall
 
 
+# This is a test class for the Mario class in /data/components/mario.py.
+# This class represents the Mario character in the game.
+# There is at least one test for each Mario method, asserting that the correct values were modified and the correct
+# methods were called. In order to achieve full coverage, some methods require multiple tests to achieve that their
+# behavior is correct across all possible cases.
 class TestMario(TestCase):
     @classmethod
     def setUpClass(cls):

@@ -6,7 +6,11 @@ from SuperMarioLevel1.data import constants as c
 from SuperMarioLevel1.data.components.score import Score
 # import numpy
 
-
+# This is a test class for the Coin class in /data/components/coin.py.
+# This class represents Coins found in boxes and bricks.
+# There is at least one test for each Coin method, asserting that the correct values were modified and the correct
+# methods were called. In order to achieve full coverage, some methods require multiple tests to achieve that their
+# behavior is correct across all possible cases.
 class TestCoin(TestCase):
 
     @classmethod

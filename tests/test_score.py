@@ -5,6 +5,11 @@ import SuperMarioLevel1.data.constants as c
 from unittest.mock import MagicMock
 
 
+# This is a test class for the Score class in /data/components/score.py.
+# This class represents the Scores that appear, float up, and disappear.
+# There is at least one test for each Score method, asserting that the correct values were modified and the correct
+# methods were called. In order to achieve full coverage, some methods require multiple tests to achieve that their
+# behavior is correct across all possible cases.
 class TestScore(TestCase):
 
     @classmethod

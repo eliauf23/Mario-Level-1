@@ -5,6 +5,12 @@ import SuperMarioLevel1.data.constants as c
 from unittest import TestCase
 
 
+# This is a test class for the OverheadInfo class in /data/components/info.py.
+# This class represents the Class for level information like score, coin total,
+#         and time remaining.
+# There is at least one test for each OverheadInfo method, asserting that the correct values were modified and the correct
+# methods were called. In order to achieve full coverage, some methods require multiple tests to achieve that their
+# behavior is correct across all possible cases.
 class TestOverheadInfo(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -337,26 +343,3 @@ class TestOverheadInfo(TestCase):
             self.overhead_info.draw_time_out_screen_info(surface)
             self.assertEqual(mock_blit.call_count, total_expected_blit)
 
-# # Will look something like this!
-#     with patch('SuperMarioLevel1.data.components.info.pg') as mock_pg:
-#         self.overhead_info.state = c.MAIN_MENU
-#         surface = Mock()
-#         self.overhead_info.draw(surface)
-#         blit_calls = surface.blit.call_args_list
-#
-#         # List of image names expected to be drawn on the surface for the main menu state
-#         expected_images = [
-#             'player_image',
-#             'player_image_small'
-#             # Add more image names if necessary
-#         ]
-#
-#         for call in blit_calls:
-#             image = call.args[0]
-#             for img_name in expected_images:
-#                 if image == self.overhead_info.score_images[img_name]:
-#                     expected_images.remove(img_name)
-#                     break
-#
-#         # Assert that all expected images have been drawn
-#         self.assertEqual(len(expected_images), 0)

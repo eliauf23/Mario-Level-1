@@ -4,7 +4,11 @@ import SuperMarioLevel1.data.constants as c
 from SuperMarioLevel1.data.components.enemies import Enemy, Goomba, Koopa
 from unittest.mock import Mock, MagicMock
 
-
+# This is a test class for the Enemy, Goomba, and Koopa classes in /data/components/enemies.py. The Enemy class
+# represents a Base class for all enemies (Goombas, Koopas, etc.) There is at least one test for each Enemy, Goomba,
+# and Koopa method, asserting that the correct values were modified and the correct methods were called. In order to
+# achieve full coverage, some methods require multiple tests to achieve that their behavior is correct across all
+# possible cases.
 class TestEnemy(unittest.TestCase):
 
     @classmethod

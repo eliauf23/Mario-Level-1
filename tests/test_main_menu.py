@@ -13,6 +13,12 @@ from data.components.powerups import LifeMushroom, Mushroom, Star, FireBall
 from data.components.score import Score
 from SuperMarioLevel1.data.states.main_menu import Menu
 
+
+# This is a test class for the Menu class in /data/states/main_menu.py.
+# This class represents the main menu of the game.
+# There is at least one test for each Menu method, asserting that the correct values were modified and the correct
+# methods were called. In order to achieve full coverage, some methods require multiple tests to achieve that their
+# behavior is correct across all possible cases.
 class TestMainMenu(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -39,7 +45,7 @@ class TestMainMenu(TestCase):
             tools.keybinding['action']: False
         }
         with patch.object(self.menu, 'update_cursor') as mock_update_cursor:
-            self.menu.update(surface,keys,0)
+            self.menu.update(surface, keys, 0)
             mock_update_cursor.assert_called_once_with(keys)
             self.assertEqual(self.menu.current_time, 0)
             self.assertEqual(self.menu.game_info[c.CURRENT_TIME], 0)

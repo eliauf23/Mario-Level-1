@@ -5,6 +5,11 @@ from SuperMarioLevel1.data.components.flashing_coin import Coin
 import SuperMarioLevel1.data.constants as c
 
 
+# This is a test class for the Coin class in /data/components/flashing_coin.py.
+# This class represents the Flashing coin next to coin total info.
+# There is at least one test for each Coin method, asserting that the correct values were modified and the correct
+# methods were called. In order to achieve full coverage, some methods require multiple tests to achieve that their
+# behavior is correct across all possible cases.
 class TestFlashingCoin(TestCase):
 
     @classmethod

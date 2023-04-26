@@ -4,7 +4,11 @@ from unittest.mock import MagicMock, patch
 from SuperMarioLevel1.data.components.flagpole import Flag, Pole, Finial
 import SuperMarioLevel1.data.constants as c
 
-
+# This is a test class for the Flag class in /data/components/flagpole.py.
+# This class represents the Flag on top of the flag pole at the end of the level.
+# There is at least one test for each Flag method, asserting that the correct values were modified and the correct
+# methods were called. In order to achieve full coverage, some methods require multiple tests to achieve that their
+# behavior is correct across all possible cases.
 class TestFlag(TestCase):
 
     @classmethod
@@ -65,7 +69,11 @@ class TestFlag(TestCase):
             self.flag.update()
             mock_handle_state.assert_called_once()
 
-
+# This is a test class for the Pole class in /data/components/flagpole.py.
+# This class represents the Pole that the flag is on top of.
+# There is at least one test for each Pole method, asserting that the correct values were modified and the correct
+# methods were called. In order to achieve full coverage, some methods require multiple tests to achieve that their
+# behavior is correct across all possible cases.
 class TestPole(TestCase):
 
     @classmethod
@@ -99,6 +107,11 @@ class TestPole(TestCase):
         self.assertEqual(self.pole.rect, initial_rect)
 
 
+# This is a test class for the Finial class in /data/components/flagpole.py.
+# This class represents the top of the flag pole.
+# There is at least one test for each Finial method, asserting that the correct values were modified and the correct
+# methods were called. In order to achieve full coverage, some methods require multiple tests to achieve that their
+# behavior is correct across all possible cases.
 class TestFinial(TestCase):
 
     @classmethod

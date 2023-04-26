@@ -4,7 +4,12 @@ import SuperMarioLevel1.data.constants as c
 from SuperMarioLevel1.data.components.checkpoint import Checkpoint
 from parameterized import parameterized
 
-
+# This is a test class for the Checkpoint class in /data/components/checkpoint.py.
+# This class represents an Invisible sprite used to add enemies, special boxes
+#     and trigger sliding down the flag pole.
+# There is at least one test for each Checkpoint method, asserting that the correct values were modified and the correct
+# methods were called. In order to achieve full coverage, some methods require multiple tests to achieve that their
+# behavior is correct across all possible cases.
 class TestCheckpoint(unittest.TestCase):
 
     @classmethod
