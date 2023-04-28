@@ -1,9 +1,11 @@
-import pygame as pg
 from unittest import TestCase
-from unittest.mock import MagicMock, patch, Mock
+from unittest.mock import Mock
+
+import pygame as pg
+
 import SuperMarioLevel1.data.constants as c
-from SuperMarioLevel1.data.components.powerups import Powerup, Mushroom, Star, FireFlower, LifeMushroom, FireBall
 import SuperMarioLevel1.data.setup as setup
+from SuperMarioLevel1.data.components.powerups import Powerup, Mushroom, Star, FireFlower, LifeMushroom, FireBall
 
 
 # This is a test class for the Powerup class in /data/components/powerups.py.
@@ -78,7 +80,6 @@ class TestMushroom(TestCase):
         sprite_sheet = setup.GFX['item_objects']
         image = self.mushroom.get_image(0, 0, 16, 16)
         self.assertEqual(image.get_rect().size, (16 * c.SIZE_MULTIPLIER, 16 * c.SIZE_MULTIPLIER))
-        # TODO: ADD MORE IMAGE TESTING HERE
 
     def test_update(self):
         self.mushroom.update({c.CURRENT_TIME: 0})
@@ -133,7 +134,6 @@ class TestLifeMushroom(TestCase):
         self.life_mushroom = LifeMushroom(0, 0)
 
     def test_setup_frames(self):
-        # TODO: check if this should start at 1
         self.assertEqual(len(self.life_mushroom.frames), 1)
         self.life_mushroom.setup_frames()
         self.assertEqual(len(self.life_mushroom.frames), 2)

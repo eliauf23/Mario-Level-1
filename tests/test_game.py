@@ -1,10 +1,20 @@
-import os
 import unittest
 from unittest import TestCase
 import pygame as pg
 from unittest.mock import MagicMock, patch
-from SuperMarioLevel1.data.tools import Control, _State, keybinding, load_all_gfx, load_all_music, load_all_fonts, load_all_sfx
+from SuperMarioLevel1.data.tools import Control, _State, load_all_gfx, load_all_music, load_all_fonts, \
+    load_all_sfx
 import SuperMarioLevel1.data.constants as c
+import unittest
+from unittest import TestCase
+from unittest.mock import MagicMock, patch
+
+import pygame as pg
+
+import SuperMarioLevel1.data.constants as c
+from SuperMarioLevel1.data.tools import Control, _State, load_all_gfx, load_all_music, load_all_fonts, \
+    load_all_sfx
+
 
 # This is a test class for the Control class in /data/tools.py.
 # This class represents the Control class for entire project. Contains the game loop, and contains
@@ -13,6 +23,8 @@ import SuperMarioLevel1.data.constants as c
 # There is at least one test for each Control method, asserting that the correct values were modified and the correct
 # methods were called. In order to achieve full coverage, some methods require multiple tests to achieve that their
 # behavior is correct across all possible cases.
+
+
 class TestControl(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -51,11 +63,14 @@ class TestControl(TestCase):
         self.control.toggle_show_fps(pg.K_F5)
         self.assertFalse(self.control.show_fps)
 
+
 # This is a test class for the _State class in /data/tools.py.
 # This class represents the state of the game at the current time.
 # There is at least one test for each _State method, asserting that the correct values were modified and the correct
 # methods were called. In order to achieve full coverage, some methods require multiple tests to achieve that their
 # behavior is correct across all possible cases.
+
+
 class TestState(TestCase):
     def setUp(self):
         self.state = _State()
@@ -77,7 +92,6 @@ class TestState(TestCase):
 
     def test_get_event(self):
         self.state.get_event(pg.event.Event(pg.QUIT))
-        # TODO: how is this broken lol
         self.assertTrue(self.state.quit)
 
     def test_update(self):
@@ -89,10 +103,13 @@ class TestState(TestCase):
     def test_startup(self):
         self.state.startup(None, None)
 
+
 # This is a test class for the various load functions in /data/tools.py.
 # These load functions load gfx, sfx, fonts, and music.
 # There is at least one test for each of these methods, asserting that the correct values were modified and the correct
 # methods were called.
+
+
 class TestLoadFunctions(unittest.TestCase):
 
     @classmethod
@@ -102,6 +119,7 @@ class TestLoadFunctions(unittest.TestCase):
 
     def setUp(self):
         self.control = Control("Test Caption")
+
     @patch('os.listdir')
     @patch('pygame.image.load')
     def test_load_all_gfx(self, mock_pg_image_load, mock_os_listdir):

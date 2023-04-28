@@ -1,8 +1,10 @@
-import pygame as pg
 from unittest import TestCase
-from unittest.mock import MagicMock, patch, Mock
-from SuperMarioLevel1.data.components.flashing_coin import Coin
+from unittest.mock import Mock
+
+import pygame as pg
+
 import SuperMarioLevel1.data.constants as c
+from SuperMarioLevel1.data.components.flashing_coin import Coin
 
 
 # This is a test class for the Coin class in /data/components/flashing_coin.py.
@@ -70,5 +72,3 @@ class TestFlashingCoin(TestCase):
         self.coin_flashing.update(self.current_time)
         self.assertEqual(self.coin_flashing.frame_index, 0)
         self.assertTrue(self.coin_flashing.first_half)
-
-

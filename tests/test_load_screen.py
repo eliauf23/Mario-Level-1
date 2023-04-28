@@ -1,16 +1,15 @@
-import pygame as pg
 from unittest import TestCase
-from unittest.mock import MagicMock, patch, Mock
+from unittest.mock import MagicMock, patch
+
+import pygame as pg
+
 import SuperMarioLevel1.data.constants as c
-from SuperMarioLevel1.data.states.level1 import Level1
 import SuperMarioLevel1.data.setup as setup
 import SuperMarioLevel1.data.tools as tools
-from SuperMarioLevel1.data.states.load_screen import LoadScreen
 from SuperMarioLevel1.data.states.load_screen import GameOver
+from SuperMarioLevel1.data.states.load_screen import LoadScreen
 from SuperMarioLevel1.data.states.load_screen import TimeOut
-from data.components import score, bricks, castle_flag
-from data.components.powerups import LifeMushroom, Mushroom, Star, FireBall
-from data.components.score import Score
+
 
 # This is a test class for the LoadScreen class in /data/states/load_screen.py.
 # This class represents the loading screen of the game.
@@ -37,8 +36,8 @@ class TestLoadScreen(TestCase):
     def test_startup(self):
         persist = {
             c.COIN_TOTAL: 0,
-        c.LIVES: 3,
-        c.TOP_SCORE: 0}
+            c.LIVES: 3,
+            c.TOP_SCORE: 0}
         self.load_screen.startup(0, persist)
         self.assertEqual(self.load_screen.start_time, 0)
         self.assertEqual(self.load_screen.persist, persist)
@@ -117,6 +116,7 @@ class TestLoadScreen(TestCase):
         self.load_screen.start_time = 1
         self.load_screen.update(surface, keys, 2636)
         self.assertTrue(self.load_screen.done)
+
 
 # This is a test class for the GameOver class in /data/states/load_screen.py.
 # This class represents A loading screen with Game Over.
@@ -215,6 +215,7 @@ class TestGameOver(TestCase):
         with patch.object(surface, 'fill') as mock_fill:
             self.game_over.update(surface, keys, 8000)
             self.assertTrue(self.game_over.done)
+
 
 # This is a test class for the TimeOut class in /data/states/load_screen.py.
 # This class represents A Loading Screen with Time Out.

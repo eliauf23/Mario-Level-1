@@ -1,16 +1,11 @@
-import pygame as pg
 from unittest import TestCase
-from unittest.mock import MagicMock, patch, Mock
+from unittest.mock import MagicMock, patch
+
+import pygame as pg
+
 import SuperMarioLevel1.data.constants as c
-from SuperMarioLevel1.data.states.level1 import Level1
 import SuperMarioLevel1.data.setup as setup
 import SuperMarioLevel1.data.tools as tools
-from SuperMarioLevel1.data.states.load_screen import LoadScreen
-from SuperMarioLevel1.data.states.load_screen import GameOver
-from SuperMarioLevel1.data.states.load_screen import TimeOut
-from data.components import score, bricks, castle_flag
-from data.components.powerups import LifeMushroom, Mushroom, Star, FireBall
-from data.components.score import Score
 from SuperMarioLevel1.data.states.main_menu import Menu
 
 

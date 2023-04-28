@@ -1,8 +1,10 @@
 from unittest import TestCase
-import pygame as pg
-from SuperMarioLevel1.data.components.score import Score
-import SuperMarioLevel1.data.constants as c
 from unittest.mock import MagicMock
+
+import pygame as pg
+
+import SuperMarioLevel1.data.constants as c
+from SuperMarioLevel1.data.components.score import Score
 
 
 # This is a test class for the Score class in /data/components/score.py.

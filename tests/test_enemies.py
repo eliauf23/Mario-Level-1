@@ -1,8 +1,11 @@
 import unittest
+from unittest.mock import Mock, MagicMock
+
 import pygame as pg
+
 import SuperMarioLevel1.data.constants as c
 from SuperMarioLevel1.data.components.enemies import Enemy, Goomba, Koopa
-from unittest.mock import Mock, MagicMock
+
 
 # This is a test class for the Enemy, Goomba, and Koopa classes in /data/components/enemies.py. The Enemy class
 # represents a Base class for all enemies (Goombas, Koopas, etc.) There is at least one test for each Enemy, Goomba,

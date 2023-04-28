@@ -1,8 +1,11 @@
 from unittest import TestCase
-from unittest.mock import MagicMock, patch, PropertyMock
+from unittest.mock import MagicMock, patch
+
 import pygame as pg
-from SuperMarioLevel1.data.components.coin_box import Coin_box
+
 import SuperMarioLevel1.data.constants as c
+from SuperMarioLevel1.data.components.coin_box import Coin_box
+
 
 # This is a test class for the Coin_box class in /data/components/coin_box.py.
 # This class represents the Coin box sprite.
@@ -80,7 +83,6 @@ class TestCoinBox(TestCase):
         for frame in self.coin_box.frames:
             self.assertIsInstance(frame, pg.Surface)
 
-    # TODO: check on this setup_timers test
     def test_setup_timers(self):
         self.coin_box.current_time = 0
         self.coin_box.setup_timers()

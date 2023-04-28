@@ -1,10 +1,10 @@
-import unittest
-from unittest.mock import MagicMock, patch
-from SuperMarioLevel1.data.game_sound import Sound
-import SuperMarioLevel1.data.constants as c
 from unittest import TestCase
-# import pygame
-import pygame as pg
+from unittest.mock import MagicMock, patch
+
+import SuperMarioLevel1.data.constants as c
+from SuperMarioLevel1.data.game_sound import Sound
+
+
 
 
 # This is a test class for the Sound class in /data/game_sound.py.

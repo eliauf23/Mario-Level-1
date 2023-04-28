@@ -1,8 +1,10 @@
-from SuperMarioLevel1.data.components.bricks import Brick, BrickPiece
-import SuperMarioLevel1.data.constants as c
 from unittest import TestCase
 from unittest.mock import patch
+
 import pygame as pg
+
+import SuperMarioLevel1.data.constants as c
+from SuperMarioLevel1.data.components.bricks import Brick, BrickPiece
 
 
 # This is a test class for the Brick class in /data/components/bricks.py.
@@ -11,7 +13,7 @@ import pygame as pg
 # methods were called. In order to achieve full coverage, some methods require multiple tests to achieve that their
 # behavior is correct across all possible cases.
 class TestBrick(TestCase):
-    
+
     def test_brick_init(self):
         with patch('SuperMarioLevel1.data.components.bricks.Brick.get_image', return_value=pg.Surface((16, 16))):
             brick = Brick(50, 50, contents='6coins')
@@ -20,8 +22,6 @@ class TestBrick(TestCase):
             self.assertEqual(brick.contents, '6coins')
             self.assertEqual(brick.coin_total, 6)
             self.assertEqual(brick.state, c.RESTING)
-
-
 
     def test_bumped_star(self):
         brick = Brick(50, 50, contents='star')
@@ -48,8 +48,6 @@ class TestBrick(TestCase):
         brick.bumped()
         self.assertEqual(brick.rect.y, brick.rest_height)
         self.assertEqual(brick.state, c.RESTING)
-
-
 
     def test_get_image_1(self):
         """Test get_image method"""
@@ -93,9 +91,6 @@ class TestBrick(TestCase):
             self.assertEqual(brick.coin_total, 0)
             self.assertEqual(brick.frame_index, 1)
 
-
-
-
     def test_brick_resting_coin_total_is_zero(self):
         with patch('SuperMarioLevel1.data.components.bricks.Brick.get_image', return_value=pg.Surface((16, 16))):
             brick = Brick(50, 50, contents='6coins')
@@ -107,8 +102,6 @@ class TestBrick(TestCase):
             self.assertEqual(brick.frame_index, 0)
             self.assertEqual(brick.state, c.OPENED)
 
-
-
     def test_brick_contents_star_start_bump(self):
         with patch('SuperMarioLevel1.data.components.bricks.Brick.get_image', return_value=pg.Surface((16, 16))):
             brick = Brick(50, 50, contents='star')
@@ -116,7 +109,6 @@ class TestBrick(TestCase):
             self.assertEqual(brick.frame_index, 1)
             self.assertEqual(brick.y_vel, -6)
             self.assertEqual(brick.state, c.BUMPED)
-
 
     def test_brick_bumped_coins(self):
         with patch('SuperMarioLevel1.data.components.bricks.Brick.get_image', return_value=pg.Surface((16, 16))):
@@ -131,8 +123,6 @@ class TestBrick(TestCase):
             brick.state = c.BUMPED
             brick.update()
             self.assertEqual(brick.frame_index, 0)
-
-
 
     def test_get_image(self):
         with patch('SuperMarioLevel1.data.components.bricks.Brick.get_image', return_value=pg.Surface((16, 16))):
@@ -187,16 +177,6 @@ class TestBrickPiece(TestCase):
             brick_piece.check_if_off_screen()
             self.assertFalse(brick_piece.alive())
 
-    # def test_brick_piece_update_off_screen(self):
-    #     # TODO: not sure if update brick piece is broken or I'm not setting up the test correctly
-    #     with patch('SuperMarioLevel1.data.components.bricks.Brick.get_image', return_value=pg.Surface((16, 16))):
-    #         brick_piece = BrickPiece(100, 100, 2, -4)
-    #         brick_piece.rect.y = 0
-    #         brick_piece.update()
-    #         self.assertEqual(brick_piece.y_vel, 0)
-    #         self.assertEqual(brick_piece.gravity, 0)
-    #         self.assertEqual(brick_piece.rect.y, 0)
-
     def test_brick_piece_update(self):
         with patch('SuperMarioLevel1.data.components.bricks.Brick.get_image', return_value=pg.Surface((16, 16))):
             brick_piece = BrickPiece(100, 100, 2, -4)
@@ -208,7 +188,6 @@ class TestBrickPiece(TestCase):
             self.assertEqual(brick_piece.rect.x, 102)
             self.assertEqual(brick_piece.rect.y, 96)
             self.assertEqual(brick_piece.x_vel, 2)
-            # TODO: check if this is a bug or I'm not setting up the test correctly
             self.assertEqual(brick_piece.y_vel, brick_piece.y_vel + brick_piece.gravity)
 
     def test_check_if_off_screen(self):

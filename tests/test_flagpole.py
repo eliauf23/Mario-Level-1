@@ -1,8 +1,11 @@
-import pygame as pg
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
-from SuperMarioLevel1.data.components.flagpole import Flag, Pole, Finial
+
+import pygame as pg
+
 import SuperMarioLevel1.data.constants as c
+from SuperMarioLevel1.data.components.flagpole import Flag, Pole, Finial
+
 
 # This is a test class for the Flag class in /data/components/flagpole.py.
 # This class represents the Flag on top of the flag pole at the end of the level.
@@ -68,6 +71,7 @@ class TestFlag(TestCase):
         with patch.object(self.flag, 'handle_state') as mock_handle_state:
             self.flag.update()
             mock_handle_state.assert_called_once()
+
 
 # This is a test class for the Pole class in /data/components/flagpole.py.
 # This class represents the Pole that the flag is on top of.

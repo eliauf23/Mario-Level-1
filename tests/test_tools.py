@@ -1,9 +1,11 @@
+from unittest import TestCase
+from unittest.mock import MagicMock, patch, Mock
+
 import pygame as pg
-from unittest.mock import MagicMock, patch, Mock, ANY
+
+import SuperMarioLevel1.data.constants as c
 from SuperMarioLevel1.data.tools import Control
 from SuperMarioLevel1.data.tools import _State
-import SuperMarioLevel1.data.constants as c
-from unittest import TestCase
 
 
 # This is a test class for the Control an _State classes in /data/tools.py.

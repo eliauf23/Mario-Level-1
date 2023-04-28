@@ -1,13 +1,14 @@
-import pygame as pg
 from unittest import TestCase
 from unittest.mock import MagicMock, patch, Mock
+
+import pygame as pg
+
 import SuperMarioLevel1.data.constants as c
-from SuperMarioLevel1.data.states.level1 import Level1
 import SuperMarioLevel1.data.setup as setup
 import SuperMarioLevel1.data.tools as tools
-from data.components import score, bricks, castle_flag
+from SuperMarioLevel1.data.states.level1 import Level1
+from data.components import score
 from data.components.powerups import LifeMushroom, Mushroom, Star, FireBall
-from data.components.score import Score
 
 
 # This is a test class for the Level1 class in /data/states/level1.py.
@@ -1196,7 +1197,7 @@ class TestLevel1(TestCase):
         assert enemy, fireball in self.level1.sprites_about_to_die_group
 
     def test_check_if_falling(self):
-        mushroom = Mushroom(0,0)
+        mushroom = Mushroom(0, 0)
         mushroom.state = c.COIN
         pg.sprite.spritecollideany = Mock()
         pg.sprite.spritecollideany.side_effect = [None, None, None, None, None, None]

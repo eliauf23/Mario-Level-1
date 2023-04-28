@@ -1,8 +1,10 @@
-import pygame as pg
 from unittest import TestCase
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
+
+import pygame as pg
+
 from SuperMarioLevel1.data.components.castle_flag import Flag
-import SuperMarioLevel1.data.constants as c
+
 
 # This is a test class for the Flag class in /data/components/castle_flag.py.
 # This class represents Flag on the castle.
@@ -27,7 +29,6 @@ class TestCastleFlag(TestCase):
             flag.update()
             assert flag.rect.y == 398
             assert flag.state == 'rising'
-
 
     def test_rising(self):
         flag = Flag(200, 400)

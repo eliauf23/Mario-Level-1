@@ -1,7 +1,10 @@
 import unittest
+
 import pygame as pg
+
 import SuperMarioLevel1.data.constants as c
 from SuperMarioLevel1.data.components.collider import Collider
+
 
 # This is a test class for the Collider class in /data/components/collider.py.
 # This class represents Invisible sprites placed overtop background parts

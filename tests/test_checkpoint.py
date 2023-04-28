@@ -1,8 +1,11 @@
 import unittest
+
 import pygame as pg
+from parameterized import parameterized
+
 import SuperMarioLevel1.data.constants as c
 from SuperMarioLevel1.data.components.checkpoint import Checkpoint
-from parameterized import parameterized
+
 
 # This is a test class for the Checkpoint class in /data/components/checkpoint.py.
 # This class represents an Invisible sprite used to add enemies, special boxes

@@ -1,9 +1,12 @@
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
+
 import pygame as pg
-from SuperMarioLevel1.data.components.coin import Coin
+
 from SuperMarioLevel1.data import constants as c
-from SuperMarioLevel1.data.components.score import Score
+from SuperMarioLevel1.data.components.coin import Coin
+
+
 # import numpy
 
 # This is a test class for the Coin class in /data/components/coin.py.
@@ -49,30 +52,21 @@ class TestCoin(TestCase):
         self.coin.spinning()
         self.assertNotEqual(self.coin.rect.bottom, initial_rect_bottom)
 
-    #     # TODO: check this
-    #     self.assertGreater(self.coin.rect.bottom, initial_rect_bottom - 15)
-
     def test_spinning_state(self):
-        # Save initial values
         initial_height = self.coin.rect.bottom
         initial_frame_index = self.coin.frame_index
         initial_image = self.coin.image.copy()
-        # Set up required mocks
         with patch('SuperMarioLevel1.data.components.score.Score') as mock_score:
-            # game_info = {c.CURRENT_TIME: 100}
             viewport = MagicMock()
             self.coin.viewport = viewport
-            # Test image assignment and frame index increment
             self.coin.current_time = 100
             self.coin.animation_timer = 0
             self.coin.spinning()
-            # self.assertEqual(self.coin.frames[initial_frame_index + 1], self.coin.image)
             s1 = self.coin.frames[initial_frame_index + 1]
             s2 = self.coin.image
             self.assertEqual(s1.get_parent(), s2.get_parent())
             self.assertEqual(s1.get_offset(), s2.get_offset())
             self.assertEqual(initial_frame_index + 1, self.coin.frame_index)
-
 
     def test_get_image_different_values(self):
         img1 = self.coin.get_image(0, 0, 8, 14)

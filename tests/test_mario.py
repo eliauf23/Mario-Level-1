@@ -1,11 +1,12 @@
-import pygame as pg
 from unittest import TestCase
-from unittest.mock import MagicMock, patch, Mock
+from unittest.mock import MagicMock, patch
 
-import SuperMarioLevel1.data.tools as tools
-from SuperMarioLevel1.data.components.mario import Mario
+import pygame as pg
+
 import SuperMarioLevel1.data.constants as c
 import SuperMarioLevel1.data.setup as setup
+import SuperMarioLevel1.data.tools as tools
+from SuperMarioLevel1.data.components.mario import Mario
 from SuperMarioLevel1.data.components.powerups import FireBall
 
 
@@ -46,18 +47,8 @@ class TestMario(TestCase):
         self.assertEqual(self.mario.hurt_invisible_timer, 0)
         self.assertEqual(self.mario.hurt_invisible_timer2, 0)
         self.assertEqual(self.mario.flag_pole_timer, 0)
-
-        # assert setup state booleans are correct - still TODO are the following
-
-        # self.setup_forces()
-        # self.setup_counters()
-        # self.load_images_from_sheet()
-        # self.image = self.right_frames[self.frame_index]
-        # self.rect = self.image.get_rect()
-        # self.mask = pg.mask.from_surface(self.image)
-
-        assert (self.mario.key_timer == 0)
-        assert (self.mario.state == c.WALK)
+        self.assertEqual(self.mario.key_timer, 0)
+        self.assertEqual(self.mario.state, c.WALK)
 
     def test_setup_timers(self):
         self.mario.setup_timers()
@@ -292,8 +283,8 @@ class TestMario(TestCase):
 
         setup.SFX['fireball'].play.assert_called_once()
         fire_group.add.assert_called_once()
-        self.assertEqual(self.mario.image, self.mario.left_frames[self.mario.frame_index])
-
+        self.assertEqual(self.mario.image,
+                         self.mario.left_frames[self.mario.frame_index])
 
     def test_count_number_of_fireballs(self):
         fire_group = MagicMock()
@@ -322,7 +313,9 @@ class TestMario(TestCase):
 
     def test_walking_frame_index_not_0_less_than_3(self):
         fire_group = MagicMock()
-        zero_func = lambda: 0
+
+        def zero_func(): return 0
+
         self.mario.frame_index = 1
         with patch.object(self.mario, 'calculate_animation_speed', new=zero_func):
             self.mario.current_time = 100
@@ -334,7 +327,9 @@ class TestMario(TestCase):
     def test_walking_frame_index_not_0_not_less_than_3(self):
         self.mario.frame_index = 3
         fire_group = MagicMock()
-        zero_func = lambda: 0
+
+        def zero_func(): return 0
+
         with patch.object(self.mario, 'calculate_animation_speed', new=zero_func):
             self.mario.current_time = 100
             self.mario.walking_timer = 10
@@ -449,7 +444,6 @@ class TestMario(TestCase):
         self.assertEqual(self.mario.x_vel, 0)
         self.assertEqual(self.mario.state, c.STAND)
 
-
     def test_calculate_animation_speed(self):
         self.mario.x_vel = 0
         self.assertEqual(self.mario.calculate_animation_speed(), 130)
@@ -481,7 +475,7 @@ class TestMario(TestCase):
         self.mario.max_x_vel = 0
         fire_group = MagicMock()
         self.mario.jumping(self.keys, fire_group)
-        self.assertEqual(self.mario.x_vel, 1-self.mario.x_accel)
+        self.assertEqual(self.mario.x_vel, 1 - self.mario.x_accel)
 
     def test_jumping_right(self):
         self.keys[tools.keybinding['right']] = True
@@ -499,6 +493,7 @@ class TestMario(TestCase):
         with patch.object(self.mario, 'shoot_fireball') as mock_shoot_fireball:
             self.mario.jumping(self.keys, fire_group)
             mock_shoot_fireball.assert_called_once_with(fire_group)
+
     def test_falling(self):
         keys = {
             tools.keybinding['left']: False,
@@ -559,7 +554,8 @@ class TestMario(TestCase):
 
         self.mario.facing_right = True
         self.mario.set_mario_to_middle_image()
-        self.assertEqual(self.mario.image, self.mario.normal_small_frames[0][7])
+        self.assertEqual(self.mario.image,
+                         self.mario.normal_small_frames[0][7])
         self.assertEqual(self.mario.rect.bottom, 100)
         self.assertEqual(self.mario.rect.centerx, 50)
 
@@ -572,7 +568,8 @@ class TestMario(TestCase):
 
         self.mario.facing_right = False
         self.mario.set_mario_to_middle_image()
-        self.assertEqual(self.mario.image, self.mario.normal_small_frames[1][7])
+        self.assertEqual(self.mario.image,
+                         self.mario.normal_small_frames[1][7])
         self.assertEqual(self.mario.rect.bottom, 100)
         self.assertEqual(self.mario.rect.centerx, 50)
 
@@ -585,7 +582,8 @@ class TestMario(TestCase):
 
         self.mario.facing_right = True
         self.mario.set_mario_to_small_image()
-        self.assertEqual(self.mario.image, self.mario.normal_small_frames[0][0])
+        self.assertEqual(self.mario.image,
+                         self.mario.normal_small_frames[0][0])
         self.assertEqual(self.mario.rect.bottom, 100)
         self.assertEqual(self.mario.rect.centerx, 50)
 
@@ -598,7 +596,8 @@ class TestMario(TestCase):
 
         self.mario.facing_right = False
         self.mario.set_mario_to_small_image()
-        self.assertEqual(self.mario.image, self.mario.normal_small_frames[1][0])
+        self.assertEqual(self.mario.image,
+                         self.mario.normal_small_frames[1][0])
         self.assertEqual(self.mario.rect.bottom, 100)
         self.assertEqual(self.mario.rect.centerx, 50)
 
@@ -654,7 +653,7 @@ class TestMario(TestCase):
         self.mario.changing_to_fire()
         self.assertTrue(self.mario.in_transition_state)
 
-    #note these next tests are for the final elifs in changing_to_fire
+    # note these next tests are for the final elifs in changing_to_fire
     def test_changing_to_fire_1(self):
         self.mario.facing_right = True
         self.mario.current_time = 100
@@ -667,7 +666,8 @@ class TestMario(TestCase):
         self.mario.current_time = 195
         self.mario.fire_transition_timer = 1
         self.mario.changing_to_fire()
-        self.assertEqual(self.mario.image, self.mario.right_big_green_frames[3])
+        self.assertEqual(self.mario.image,
+                         self.mario.right_big_green_frames[3])
 
     def test_changing_to_fire_3(self):
         self.mario.facing_right = True
@@ -681,7 +681,8 @@ class TestMario(TestCase):
         self.mario.current_time = 325
         self.mario.fire_transition_timer = 1
         self.mario.changing_to_fire()
-        self.assertEqual(self.mario.image, self.mario.right_big_black_frames[3])
+        self.assertEqual(self.mario.image,
+                         self.mario.right_big_black_frames[3])
 
     def test_changing_to_fire_5(self):
         frames = [self.mario.right_fire_frames[3],
@@ -820,7 +821,8 @@ class TestMario(TestCase):
         self.assertTrue(self.mario.in_transition_state)
         self.assertTrue(self.mario.hurt_invincible)
         self.assertEqual(self.mario.state, c.BIG_TO_SMALL)
-        self.assertEqual(self.mario.image, self.mario.right_big_normal_frames[4])
+        self.assertEqual(self.mario.image,
+                         self.mario.right_big_normal_frames[4])
 
     # next tests are checking all the elifs in changing_to_small
     def test_changing_to_small_1(self):
@@ -876,6 +878,7 @@ class TestMario(TestCase):
         self.assertTrue(self.mario.hurt_invincible)
         self.assertEqual(self.mario.state, c.BIG_TO_SMALL)
         self.assertEqual(self.mario.image, frames[1])
+
     def test_changing_to_small_4(self):
         frames = [self.mario.right_big_normal_frames[4],
                   self.mario.right_big_normal_frames[8],
@@ -1002,7 +1005,6 @@ class TestMario(TestCase):
         self.assertEqual(self.mario.state, c.WALK)
         self.assertEqual(self.mario.image, frames[2])
 
-
     def test_changing_to_small_transition_timer_zero(self):
         self.mario.current_time = 100
         self.mario.transition_timer = 0
@@ -1016,6 +1018,7 @@ class TestMario(TestCase):
         self.assertTrue(self.mario.in_transition_state)
         self.assertTrue(self.mario.hurt_invincible)
         self.assertEqual(self.mario.state, c.BIG_TO_SMALL)
+
     def test_changing_to_small_not_facing_right(self):
         self.mario.current_time = 100
         self.mario.transition_timer = 50
@@ -1028,7 +1031,8 @@ class TestMario(TestCase):
         self.assertTrue(self.mario.in_transition_state)
         self.assertTrue(self.mario.hurt_invincible)
         self.assertEqual(self.mario.state, c.BIG_TO_SMALL)
-        self.assertEqual(self.mario.image, self.mario.left_big_normal_frames[4])
+        self.assertEqual(self.mario.image,
+                         self.mario.left_big_normal_frames[4])
 
     def test_adjust_rect(self):
         self.mario.adjust_rect()
@@ -1045,7 +1049,8 @@ class TestMario(TestCase):
         self.mario.become_small()
         self.assertFalse(self.mario.big)
         # self.assertEqual(self.mario.right_frames, self.mario.right_small_normal_frames)
-        self.assertEqual(self.mario.left_frames, self.mario.left_small_normal_frames)
+        self.assertEqual(self.mario.left_frames,
+                         self.mario.left_small_normal_frames)
         # self.assertEqual(self.mario.rect.bottom, 100)
         # self.assertEqual(self.mario.rect.x, 50)
 
@@ -1060,7 +1065,8 @@ class TestMario(TestCase):
         self.mario.flag_pole_sliding()
         self.assertEqual(self.mario.state, c.FLAGPOLE)
         self.assertTrue(self.mario.in_transition_state)
-        self.assertEqual(self.mario.image, self.mario.right_small_normal_frames[0])
+        self.assertEqual(self.mario.image,
+                         self.mario.right_small_normal_frames[0])
 
     def test_flag_pole_sliding_elif_line_918(self):
         self.mario.current_time = 100
@@ -1171,8 +1177,8 @@ class TestMario(TestCase):
         self.mario.rect.y = 0
         self.mario.y_vel = 0
         self.mario.jumping_to_death()
-        self.assertEqual(self.mario.rect.y, self.mario.y_vel-self.mario.gravity)
-
+        self.assertEqual(self.mario.rect.y,
+                         self.mario.y_vel - self.mario.gravity)
 
     def test_start_death_jump(self):
         game_info = {c.MARIO_DEAD: False}
@@ -1193,88 +1199,110 @@ class TestMario(TestCase):
 
     def test_changing_to_big_2(self):
         self.mario.transition_timer = 1
-        fn = lambda x,y: x == 135 and y == 200
-        with patch.object(self.mario, 'timer_between_these_two_times', new = fn):
+
+        def fn(x, y): return x == 135 and y == 200
+
+        with patch.object(self.mario, 'timer_between_these_two_times', new=fn):
             with patch.object(self.mario, 'set_mario_to_middle_image') as mock_set_mario_to_middle_image:
                 self.mario.changing_to_big()
                 mock_set_mario_to_middle_image.assert_called_once_with()
 
     def test_changing_to_big_3(self):
         self.mario.transition_timer = 1
-        fn = lambda x,y: x == 200 and y == 365
-        with patch.object(self.mario, 'timer_between_these_two_times', new = fn):
+
+        def fn(x, y): return x == 200 and y == 365
+
+        with patch.object(self.mario, 'timer_between_these_two_times', new=fn):
             with patch.object(self.mario, 'set_mario_to_small_image') as mock_set_mario_to_small_image:
                 self.mario.changing_to_big()
                 mock_set_mario_to_small_image.assert_called_once_with()
 
     def test_changing_to_big_4(self):
         self.mario.transition_timer = 1
-        fn = lambda x,y: x == 365 and y == 430
-        with patch.object(self.mario, 'timer_between_these_two_times', new = fn):
+
+        def fn(x, y): return x == 365 and y == 430
+
+        with patch.object(self.mario, 'timer_between_these_two_times', new=fn):
             with patch.object(self.mario, 'set_mario_to_middle_image') as mock_set_mario_to_middle_image:
                 self.mario.changing_to_big()
                 mock_set_mario_to_middle_image.assert_called_once_with()
 
     def test_changing_to_big_5(self):
         self.mario.transition_timer = 1
-        fn = lambda x,y: x == 430 and y == 495
-        with patch.object(self.mario, 'timer_between_these_two_times', new = fn):
+
+        def fn(x, y): return x == 430 and y == 495
+
+        with patch.object(self.mario, 'timer_between_these_two_times', new=fn):
             with patch.object(self.mario, 'set_mario_to_small_image') as mock_set_mario_to_small_image:
                 self.mario.changing_to_big()
                 mock_set_mario_to_small_image.assert_called_once_with()
 
     def test_changing_to_big_6(self):
         self.mario.transition_timer = 1
-        fn = lambda x,y: x == 495 and y == 560
-        with patch.object(self.mario, 'timer_between_these_two_times', new = fn):
+
+        def fn(x, y): return x == 495 and y == 560
+
+        with patch.object(self.mario, 'timer_between_these_two_times', new=fn):
             with patch.object(self.mario, 'set_mario_to_middle_image') as mock_set_mario_to_middle_image:
                 self.mario.changing_to_big()
                 mock_set_mario_to_middle_image.assert_called_once_with()
 
     def test_changing_to_big_7(self):
         self.mario.transition_timer = 1
-        fn = lambda x,y: x == 560 and y == 625
-        with patch.object(self.mario, 'timer_between_these_two_times', new = fn):
+
+        def fn(x, y): return x == 560 and y == 625
+
+        with patch.object(self.mario, 'timer_between_these_two_times', new=fn):
             with patch.object(self.mario, 'set_mario_to_big_image') as mock_set_mario_to_big_image:
                 self.mario.changing_to_big()
                 mock_set_mario_to_big_image.assert_called_once_with()
 
     def test_changing_to_big_8(self):
         self.mario.transition_timer = 1
-        fn = lambda x,y: x == 625 and y == 690
-        with patch.object(self.mario, 'timer_between_these_two_times', new = fn):
+
+        def fn(x, y): return x == 625 and y == 690
+
+        with patch.object(self.mario, 'timer_between_these_two_times', new=fn):
             with patch.object(self.mario, 'set_mario_to_small_image') as mock_set_mario_to_small_image:
                 self.mario.changing_to_big()
                 mock_set_mario_to_small_image.assert_called_once_with()
 
     def test_changing_to_big_9(self):
         self.mario.transition_timer = 1
-        fn = lambda x,y: x == 690 and y == 755
-        with patch.object(self.mario, 'timer_between_these_two_times', new = fn):
+
+        def fn(x, y): return x == 690 and y == 755
+
+        with patch.object(self.mario, 'timer_between_these_two_times', new=fn):
             with patch.object(self.mario, 'set_mario_to_middle_image') as mock_set_mario_to_middle_image:
                 self.mario.changing_to_big()
                 mock_set_mario_to_middle_image.assert_called_once_with()
 
     def test_changing_to_big_10(self):
         self.mario.transition_timer = 1
-        fn = lambda x,y: x == 755 and y == 820
-        with patch.object(self.mario, 'timer_between_these_two_times', new = fn):
+
+        def fn(x, y): return x == 755 and y == 820
+
+        with patch.object(self.mario, 'timer_between_these_two_times', new=fn):
             with patch.object(self.mario, 'set_mario_to_big_image') as mock_set_mario_to_big_image:
                 self.mario.changing_to_big()
                 mock_set_mario_to_big_image.assert_called_once_with()
 
     def test_changing_to_big_11(self):
         self.mario.transition_timer = 1
-        fn = lambda x,y: x == 820 and y == 885
-        with patch.object(self.mario, 'timer_between_these_two_times', new = fn):
+
+        def fn(x, y): return x == 820 and y == 885
+
+        with patch.object(self.mario, 'timer_between_these_two_times', new=fn):
             with patch.object(self.mario, 'set_mario_to_small_image') as mock_set_mario_to_small_image:
                 self.mario.changing_to_big()
                 mock_set_mario_to_small_image.assert_called_once_with()
 
     def test_changing_to_big_12(self):
         self.mario.transition_timer = 1
-        fn = lambda x,y: x == 885 and y == 950
-        with patch.object(self.mario, 'timer_between_these_two_times', new = fn):
+
+        def fn(x, y): return x == 885 and y == 950
+
+        with patch.object(self.mario, 'timer_between_these_two_times', new=fn):
             with patch.object(self.mario, 'set_mario_to_big_image') as mock_set_mario_to_big_image:
                 with patch.object(self.mario, 'become_big') as mock_become_big:
                     self.mario.changing_to_big()
@@ -1307,15 +1335,19 @@ class TestMario(TestCase):
         self.mario.invincible = False
         self.mario.big = True
         self.mario.check_if_invincible()
-        self.assertEqual(self.mario.right_frames, self.mario.right_big_normal_frames)
-        self.assertEqual(self.mario.left_frames, self.mario.left_big_normal_frames)
+        self.assertEqual(self.mario.right_frames,
+                         self.mario.right_big_normal_frames)
+        self.assertEqual(self.mario.left_frames,
+                         self.mario.left_big_normal_frames)
 
     def test_check_if_invincible_not_invisible_not_big(self):
         self.mario.invincible = False
         self.mario.big = False
         self.mario.check_if_invincible()
-        self.assertEqual(self.mario.right_frames, self.mario.invincible_small_frames_list[0][0])
-        self.assertEqual(self.mario.left_frames, self.mario.invincible_small_frames_list[0][1])
+        self.assertEqual(self.mario.right_frames,
+                         self.mario.invincible_small_frames_list[0][0])
+        self.assertEqual(self.mario.left_frames,
+                         self.mario.invincible_small_frames_list[0][1])
 
     def test_check_if_crouching(self):
         self.mario.crouching = True
@@ -1362,7 +1394,9 @@ class TestMario(TestCase):
         self.mario.current_time = 100
         self.mario.walking_timer = 1
         self.mario.frame_index = 2
-        ret_neg_1000 = lambda : -1000
+
+        def ret_neg_1000(): return -1000
+
         with patch.object(self.mario, 'calculate_animation_speed', new=ret_neg_1000):
             self.mario.walking_to_castle()
             self.assertEqual(self.mario.max_x_vel, 5)
@@ -1374,7 +1408,9 @@ class TestMario(TestCase):
         self.mario.current_time = 100
         self.mario.walking_timer = 1
         self.mario.frame_index = 3
-        ret_neg_1000 = lambda : -1000
+
+        def ret_neg_1000(): return -1000
+
         with patch.object(self.mario, 'calculate_animation_speed', new=ret_neg_1000):
             self.mario.walking_to_castle()
             self.assertEqual(self.mario.max_x_vel, 5)
@@ -1394,9 +1430,12 @@ class TestMario(TestCase):
         self.mario.invincible_index = 100
         self.mario.change_frame_list(1)
         self.assertEqual(self.mario.invincible_index, 0)
-        self.assertEqual(self.mario.invincible_animation_timer, self.mario.current_time)
-        self.assertEqual(self.mario.right_frames, self.mario.invincible_big_frames_list[self.mario.invincible_index][0])
-        self.assertEqual(self.mario.left_frames, self.mario.invincible_big_frames_list[self.mario.invincible_index][1])
+        self.assertEqual(self.mario.invincible_animation_timer,
+                         self.mario.current_time)
+        self.assertEqual(self.mario.right_frames,
+                         self.mario.invincible_big_frames_list[self.mario.invincible_index][0])
+        self.assertEqual(self.mario.left_frames,
+                         self.mario.invincible_big_frames_list[self.mario.invincible_index][1])
 
     def test_check_if_fire(self):
         self.mario.fire = True
@@ -1411,7 +1450,8 @@ class TestMario(TestCase):
         self.mario.state = c.SMALL_TO_BIG
         self.mario.hurt_invisible_timer2 = 0
         self.mario.check_if_hurt_invincible()
-        self.assertEqual(self.mario.hurt_invisible_timer2, self.mario.current_time)
+        self.assertEqual(self.mario.hurt_invisible_timer2,
+                         self.mario.current_time)
 
     def test_check_if_hurt_invincible_inner_elif(self):
         self.mario.current_time = 1
@@ -1419,7 +1459,8 @@ class TestMario(TestCase):
         self.mario.state = c.SMALL_TO_BIG
         self.mario.hurt_invisible_timer2 = 1
         self.mario.check_if_hurt_invincible()
-        self.assertEqual(self.mario.hurt_invisible_timer2, self.mario.current_time)
+        self.assertEqual(self.mario.hurt_invisible_timer2,
+                         self.mario.current_time)
         with patch.object(self.mario, 'hurt_invincible_check') as mock_hurt_invincible_check:
             self.mario.check_if_hurt_invincible()
             mock_hurt_invincible_check.assert_called_once_with()
@@ -1438,7 +1479,8 @@ class TestMario(TestCase):
         self.mario.hurt_invisible_timer = 0
         self.mario.current_time = 10
         self.mario.hurt_invincible_check()
-        self.assertEqual(self.mario.hurt_invisible_timer, self.mario.current_time)
+        self.assertEqual(self.mario.hurt_invisible_timer,
+                         self.mario.current_time)
 
     def test_hurt_invincible_check_case_2(self):
         self.mario.hurt_invisible_timer = 1
@@ -1455,7 +1497,8 @@ class TestMario(TestCase):
         with patch.object(self.mario.image, "set_alpha") as mock_set_alpha:
             self.mario.hurt_invincible_check()
             mock_set_alpha.assert_called_once_with(255)
-            self.assertEqual(self.mario.hurt_invisible_timer, self.mario.current_time)
+            self.assertEqual(self.mario.hurt_invisible_timer,
+                             self.mario.current_time)
 
     def test_check_if_crouching_else_branch(self):
         self.mario.crouching = True
@@ -1475,11 +1518,13 @@ class TestMario(TestCase):
         self.mario.crouching = False
         self.mario.facing_right = True
         self.mario.animation()
-        self.assertEqual(self.mario.image, self.mario.right_frames[self.mario.frame_index])
+        self.assertEqual(self.mario.image,
+                         self.mario.right_frames[self.mario.frame_index])
 
     def test_animation_case_3(self):
         self.mario.state = c.END_OF_LEVEL_FALL
         self.mario.crouching = False
         self.mario.facing_right = False
         self.mario.animation()
-        self.assertEqual(self.mario.image, self.mario.left_frames[self.mario.frame_index])
+        self.assertEqual(self.mario.image,
+                         self.mario.left_frames[self.mario.frame_index])
