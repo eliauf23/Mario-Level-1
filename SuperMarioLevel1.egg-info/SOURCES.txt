@@ -38,7 +38,7 @@ tests/test_collider.py
 tests/test_enemies.py
 tests/test_flagpole.py
 tests/test_flashing_coin.py
-tests/test_game_sound.py
+tests/test_game.py
 tests/test_info.py
 tests/test_level1.py
 tests/test_load_screen.py
@@ -46,5 +46,5 @@ tests/test_main_menu.py
 tests/test_mario.py
 tests/test_powerups.py
 tests/test_score.py
-tests/test_setup.py
+tests/test_sound.py
 tests/test_tools.py

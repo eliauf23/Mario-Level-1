@@ -11,7 +11,7 @@ import pygame as pg
 # methods were called. In order to achieve full coverage, some methods require multiple tests to achieve that their
 # behavior is correct across all possible cases.
 class TestBrick(TestCase):
-
+    
     def test_brick_init(self):
         with patch('SuperMarioLevel1.data.components.bricks.Brick.get_image', return_value=pg.Surface((16, 16))):
             brick = Brick(50, 50, contents='6coins')
